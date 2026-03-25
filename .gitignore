@@ -3,5 +3,7 @@
 *.swp
 *.swo
 
+ml-recognition-model/*.keras
+
 .DS_Store
 Thumbs.db

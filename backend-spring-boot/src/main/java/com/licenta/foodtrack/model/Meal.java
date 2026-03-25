@@ -1,4 +1,4 @@
 package com.licenta.foodtrack.model;
 
-public class Masa {
+public class Meal {
 }
