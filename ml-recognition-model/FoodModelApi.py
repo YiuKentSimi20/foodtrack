@@ -5,17 +5,20 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import io
 from PIL import Image
+from pathlib import Path
 
 # 1. Initializam API-ul
 app = FastAPI(title="FoodTrack AI API", description="Microserviciu pentru recunoasterea mancarii")
 
 # 2. Încărcăm modelul la pornirea serverului (ca să nu îl încarce la fiecare poză)
 print("Se incarca modelul AI...")
-MODEL_PATH = "food_recognition_model.keras" # Asigură-te că fișierul e în același folder
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "food_recognition_model.keras"
 try:
     model = tf.keras.models.load_model(MODEL_PATH)
     print("Model incarcat cu succes!")
 except Exception as e:
+    model = None
     print(f"Eroare la incarcarea modelului: {e}")
 
 # Un dictionar scurt pentru testare
@@ -27,6 +30,12 @@ dictionar_clase = {
 @app.post("/api/predict")
 async def predict_food(file: UploadFile = File(...)):
     try:
+        if model is None:
+            return {
+                "status": "error",
+                "message": f"Modelul nu a fost incarcat. Verifica existenta fisierului la: {MODEL_PATH}"
+            }
+
         # Citim biții imaginii primite prin rețea
         contents = await file.read()
         
