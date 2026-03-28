@@ -37,12 +37,10 @@ public class FoodTrackService {
 
         List<Aliment> alimente = alimentRepository.findByProductNameContainingIgnoreCase(name);
 
-        openFoodFactsService.searchProductsByName(name)
                 .stream()
                 .filter(offProduct -> offProduct.nutriments() != null)
                 .map(alimentMapper::toAliment)
                 .filter(aliment -> !alimente.contains(aliment))
-                .filter(aliment -> !alimentRepository.existsByCode(aliment.getCode()))
                 .map(alimentRepository::save)
                 .forEach(alimente::add);
 
