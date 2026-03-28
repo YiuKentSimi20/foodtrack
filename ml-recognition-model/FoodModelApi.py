@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 import uvicorn
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.preprocessing import image
+from tensorflow.keras.preprocessing import image # type: ignore
 import io
 from PIL import Image
 from pathlib import Path
