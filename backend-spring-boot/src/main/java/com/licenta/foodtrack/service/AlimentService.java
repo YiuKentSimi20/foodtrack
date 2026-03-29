@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class FoodTrackService {
+public class AlimentService {
 
     private final OpenFoodFactsService openFoodFactsService;
     private final AlimentMapper alimentMapper;
@@ -20,13 +20,14 @@ public class FoodTrackService {
 
     public List<Aliment> searchByNameMock(String name) {
 
-        List<Aliment> alimente = alimentRepository.findByProductNameContainingIgnoreCase(name);
+        List<Aliment> alimente = alimentRepository.findByProductNameContainingIgnoreCaseAndIsValidatedTrue(name);
 
         openFoodFactsService.searchProductsMock(name)
                 .stream()
                 .filter(offProduct -> offProduct.nutriments() != null)
                 .map(alimentMapper::toAliment)
                 .filter(aliment -> !alimente.contains(aliment))
+                .filter(aliment -> alimentRepository.existsByCode(aliment.getCode()))
                 .map(alimentRepository::save)
                 .forEach(alimente::add);
 
@@ -35,12 +36,14 @@ public class FoodTrackService {
 
     public List<Aliment> searchByName(String name) {
 
-        List<Aliment> alimente = alimentRepository.findByProductNameContainingIgnoreCase(name);
+        List<Aliment> alimente = alimentRepository.findByProductNameContainingIgnoreCaseAndIsValidatedTrue(name);
 
+        openFoodFactsService.searchProductsByName(name)
                 .stream()
                 .filter(offProduct -> offProduct.nutriments() != null)
                 .map(alimentMapper::toAliment)
                 .filter(aliment -> !alimente.contains(aliment))
+                .filter(aliment -> alimentRepository.existsByCode(aliment.getCode()))
                 .map(alimentRepository::save)
                 .forEach(alimente::add);
 
@@ -55,7 +58,7 @@ public class FoodTrackService {
                         .map(OffBarcodeResponse::product)
                         .map(alimentMapper::toAliment)
                         .filter(a -> a.getCode() != null && !a.getCode().isBlank())
-                        .filter(a -> !alimentRepository.existsByCode(a.getCode()))
+                        .filter(a -> alimentRepository.existsByCode(a.getCode()))
                         .map(alimentRepository::save));
     }
 }

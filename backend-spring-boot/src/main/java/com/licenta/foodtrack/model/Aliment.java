@@ -24,8 +24,11 @@ public class Aliment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String productName;
+    private String brands;
     @Column(unique = true)
     private String code;
+    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean isValidated;
     private Double energyKcal100g;
     private Double energyKj100g;
     private Double fat100g;

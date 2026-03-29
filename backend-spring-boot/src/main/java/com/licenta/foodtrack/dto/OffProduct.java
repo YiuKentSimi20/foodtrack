@@ -8,6 +8,8 @@ public record OffProduct(
         @JsonProperty("product_name")
         String productName,
 
+        String brands,
+
         OffNutriments nutriments,
 
         @JsonProperty("nutrition_grades")

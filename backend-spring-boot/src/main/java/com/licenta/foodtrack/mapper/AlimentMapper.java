@@ -12,7 +12,9 @@ public class AlimentMapper {
         Aliment aliment = new Aliment();
 
         aliment.setProductName(offProduct.productName());
+        aliment.setBrands(offProduct.brands());
         aliment.setCode(offProduct.code());
+        aliment.setIsValidated(true);
         if(offProduct.nutriments() != null) {
             aliment.setEnergyKcal100g(offProduct.nutriments().energyKcal100g());
             aliment.setEnergyKj100g(offProduct.nutriments().energyKj100g());

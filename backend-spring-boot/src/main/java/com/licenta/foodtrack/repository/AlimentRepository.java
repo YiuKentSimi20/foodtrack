@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface AlimentRepository extends JpaRepository<Aliment, Integer> {
+public interface AlimentRepository extends JpaRepository<Aliment, Long> {
     boolean existsByCode(String aliment);
 
     Optional<Aliment> findByCode(String barcode);
 
-    List<Aliment> findByProductNameContainingIgnoreCase(String productName);
+    List<Aliment> findByProductNameContainingIgnoreCaseAndIsValidatedTrue(String productName);
+
 }
