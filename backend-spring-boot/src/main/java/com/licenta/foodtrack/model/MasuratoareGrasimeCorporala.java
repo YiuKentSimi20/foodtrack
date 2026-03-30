@@ -16,7 +16,7 @@ public class MasuratoareGrasimeCorporala {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double greutateKg;
+    private Double grasimeCorporalaProcent;
     private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)

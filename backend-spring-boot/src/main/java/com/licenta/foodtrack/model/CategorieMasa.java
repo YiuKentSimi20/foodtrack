@@ -24,4 +24,9 @@ public class CategorieMasa {
     @ManyToOne
     @JoinColumn(name = "utilizator_id")
     private Utilizator utilizator;
+
+    public CategorieMasa(String nume, int numarOrdine) {
+        this.nume = nume;
+        this.numarOrdine = numarOrdine;
+    }
 }
