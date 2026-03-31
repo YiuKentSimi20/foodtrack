@@ -29,4 +29,5 @@ public class CategorieMasa {
         this.nume = nume;
         this.numarOrdine = numarOrdine;
     }
+
 }

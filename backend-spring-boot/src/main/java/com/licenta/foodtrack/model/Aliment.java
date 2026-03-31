@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,6 +41,7 @@ public class Aliment {
     private Double salt100g;
     @Enumerated(EnumType.STRING)
     private NutritionScore nutritionScore;
+    private UUID createdByUserId;
 
     private double getUnsaturatedFat100g() {
         return fat100g - saturatedFat100g;

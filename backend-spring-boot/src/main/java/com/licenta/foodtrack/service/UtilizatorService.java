@@ -13,15 +13,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UtilizatorService {
 
-    private final UtilizatorRepository utilizatorRepository;
-    private final UtilizatorMapper utilizatorMapper;
-
-    public Utilizator register(RegisterRequest registerRequest) {
-        Utilizator utilizator = utilizatorMapper.toUtilizator(registerRequest);
-        utilizator.setRole(RolUtilizator.USER);
-        utilizatorRepository.save(utilizator);
-        return utilizator;
-    }
+//    private final UtilizatorRepository utilizatorRepository;
+//    private final UtilizatorMapper utilizatorMapper;
+//
+//    public Utilizator register(RegisterRequest registerRequest) {
+//        Utilizator utilizator = utilizatorMapper.toUtilizator(registerRequest);
+//        utilizator.setRole(RolUtilizator.USER);
+//        utilizatorRepository.save(utilizator);
+//        return utilizator;
+//    }
 
 
 }

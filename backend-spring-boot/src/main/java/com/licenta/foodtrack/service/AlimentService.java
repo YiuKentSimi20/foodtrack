@@ -27,7 +27,7 @@ public class AlimentService {
                 .filter(offProduct -> offProduct.nutriments() != null)
                 .map(alimentMapper::toAliment)
                 .filter(aliment -> !alimente.contains(aliment))
-                .filter(aliment -> alimentRepository.existsByCode(aliment.getCode()))
+                .filter(aliment -> !alimentRepository.existsByCode(aliment.getCode()))
                 .map(alimentRepository::save)
                 .forEach(alimente::add);
 
@@ -43,7 +43,7 @@ public class AlimentService {
                 .filter(offProduct -> offProduct.nutriments() != null)
                 .map(alimentMapper::toAliment)
                 .filter(aliment -> !alimente.contains(aliment))
-                .filter(aliment -> alimentRepository.existsByCode(aliment.getCode()))
+                .filter(aliment -> !alimentRepository.existsByCode(aliment.getCode()))
                 .map(alimentRepository::save)
                 .forEach(alimente::add);
 
@@ -58,7 +58,7 @@ public class AlimentService {
                         .map(OffBarcodeResponse::product)
                         .map(alimentMapper::toAliment)
                         .filter(a -> a.getCode() != null && !a.getCode().isBlank())
-                        .filter(a -> alimentRepository.existsByCode(a.getCode()))
+                        .filter(a -> !alimentRepository.existsByCode(a.getCode()))
                         .map(alimentRepository::save));
     }
 }

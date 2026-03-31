@@ -19,10 +19,10 @@ public class UtilizatorMapper {
         Utilizator utilizator = new Utilizator();
 
         utilizator.setUsername(registerRequest.username());
-        utilizator.setPassword(registerRequest.password());
         utilizator.setEmail(registerRequest.email());
-        utilizator.setGen(GenUtilizator.valueOf(registerRequest.gen().toUpperCase()));
-        utilizator.setDataNasterii(LocalDate.parse(registerRequest.dataNasterii()));
+        utilizator.setGen(registerRequest.gen());
+        //utilizator.setDataNasterii(LocalDate.parse(registerRequest.dataNasterii()));
+        utilizator.setDataNasterii(registerRequest.dataNasterii());
 
         // Setam masuratori si obiective
         utilizator.addMasuratoareGrasimeCorporala(
@@ -39,7 +39,7 @@ public class UtilizatorMapper {
 
         utilizator.setIndiceMasaCorporala(registerRequest.indiceMasaCorporala());
         utilizator.setNecesarCaloricMentinere(registerRequest.necesarCaloricMentinere());
-        utilizator.setNivelActivitate(NivelActivitate.valueOf(registerRequest.nivelActivitate().toUpperCase()));
+        utilizator.setNivelActivitate(registerRequest.nivelActivitate());
 
         utilizator.setObiectivCaloriiZi(registerRequest.obiectivCaloriiZi());
         utilizator.setObiectivGrasimiZi(registerRequest.obiectivGrasimiZi());

@@ -18,7 +18,7 @@ public class MasuratoriMapper {
         MasuratoareGrasimeCorporala masuratoare = new MasuratoareGrasimeCorporala();
 
         masuratoare.setGrasimeCorporalaProcent(dto.grasimeCorporalaProcent());
-        masuratoare.setDate(LocalDate.parse(dto.dataMasuratoare()));
+        masuratoare.setDate(dto.dataMasuratoare());
 
         return masuratoare;
     }
@@ -28,7 +28,7 @@ public class MasuratoriMapper {
         MasuratoareInaltime masuratoare = new MasuratoareInaltime();
 
         masuratoare.setInaltimeCm(dto.inaltimeCm());
-        masuratoare.setDate(LocalDate.parse(dto.dataMasuratoare()));
+        masuratoare.setDate(dto.dataMasuratoare());
 
         return masuratoare;
     }
@@ -38,7 +38,7 @@ public class MasuratoriMapper {
         MasuratoareGreutate masuratoare = new MasuratoareGreutate();
 
         masuratoare.setGreutateKg(dto.greutatekg());
-        masuratoare.setDate(LocalDate.parse(dto.dataMasuratoare()));
+        masuratoare.setDate(dto.dataMasuratoare());
 
         return masuratoare;
     }

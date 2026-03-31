@@ -1,10 +1,10 @@
 package com.licenta.foodtrack.controller;
 
 
+import com.licenta.foodtrack.auth.AuthenticationRequest;
 import com.licenta.foodtrack.auth.AuthenticationResponse;
 import com.licenta.foodtrack.auth.RegisterRequest;
-import com.licenta.foodtrack.model.Utilizator;
-import com.licenta.foodtrack.service.UtilizatorService;
+import com.licenta.foodtrack.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,29 +14,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/foodtrack/user")
+@RequestMapping("/foodtrack/user/auth")
 @RequiredArgsConstructor
-public class UtilizatorController {
-    public final UtilizatorService utilizatorService;
+public class AuthenticationController {
+    public final AuthenticationService authenticationService;
 
-    @PostMapping("/auth/register")
+    @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
-
-
-       Utilizator utilizator = utilizatorService.register(registerRequest);
-
-
-       return ResponseEntity.ok(AuthenticationResponse.builder()
-               .token(utilizator.getEmail())
-               .build());
-
+        return ResponseEntity.ok(authenticationService.register(registerRequest));
     }
 
-    @PostMapping("/auth/register/test")
-    public ResponseEntity<RegisterRequest> registerTest(@Valid @RequestBody RegisterRequest registerRequest) {
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest authenticationRequest) {
+        return ResponseEntity.ok(authenticationService.login(authenticationRequest));
+    }
 
+    @PostMapping("/register/test")
+    public ResponseEntity<RegisterRequest> registerTest(@Valid @RequestBody RegisterRequest registerRequest) {
         return ResponseEntity.ok(registerRequest);
     }
+
 
 
 

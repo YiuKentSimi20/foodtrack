@@ -1,10 +1,10 @@
 package com.licenta.foodtrack.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
 
 public record MasuratoareGrasimeCorporalaDto(
         @NotNull(message = "grasime_corporala_procent is required")
@@ -12,13 +12,12 @@ public record MasuratoareGrasimeCorporalaDto(
         @JsonProperty("grasime_corporala_procent")
         Double grasimeCorporalaProcent,
 
-        @NotBlank(message = "data_masuratoare is required")
+        @NotNull(message = "data_masuratoare is required")
+        @PastOrPresent(message = "data_masuratoare trebuie sa fie in trecut sau acum")
         @JsonProperty("data_masuratoare")
-        @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Data nasterii must be yyyy-MM-dd")
-        String dataMasuratoare,
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate dataMasuratoare
 
-        @JsonProperty("user_id")
-        Long userId
 ) {
 
 }
