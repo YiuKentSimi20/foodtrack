@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.licenta.foodtrack.dto.MasuratoareGrasimeCorporalaDto;
 import com.licenta.foodtrack.dto.MasuratoareGreutateDto;
 import com.licenta.foodtrack.dto.MasuratoareInaltimeDto;
+import com.licenta.foodtrack.dto.ObiectivDto;
 import com.licenta.foodtrack.model.GenUtilizator;
 import com.licenta.foodtrack.model.NivelActivitate;
 import jakarta.validation.Valid;
@@ -39,26 +40,6 @@ public record RegisterRequest(
 
         GenUtilizator gen,
 
-        @JsonProperty("obiectiv_calorii_zi")
-        @Positive(message = "Obiectivul de calorii pe zi trebuie să fie un număr pozitiv")
-        Double obiectivCaloriiZi,
-
-        @JsonProperty("obiectiv_greutate_kg")
-        @Positive(message = "Obiectivul de greutate în kg trebuie să fie un număr pozitiv")
-        Double obiectivGreutateKg,
-
-        @Positive(message = "Obiectivul de proteine pe zi trebuie să fie un număr pozitiv")
-        @JsonProperty("obiectiv_proteine_zi")
-        Double obiectivProteineZi,
-
-        @JsonProperty("obiectiv_carbohidrati_zi")
-        @Positive(message = "Obiectivul de carbohidrați pe zi trebuie să fie un număr pozitiv")
-        Double obiectivCarbohidratiZi,
-
-        @JsonProperty("obiectiv_grasimi_zi")
-        @Positive(message = "Obiectivul de grăsimi pe zi trebuie să fie un număr pozitiv")
-        Double obiectivGrasimiZi,
-
         @JsonProperty("nivel_activitate")
         NivelActivitate nivelActivitate,
 
@@ -73,6 +54,10 @@ public record RegisterRequest(
         @JsonProperty("tdee")
         @Positive(message = "Necesarul caloric de menținere trebuie să fie un număr pozitiv")
         Double necesarCaloricMentinere,
+
+        @Valid
+        @JsonProperty("obiectiv")
+        ObiectivDto obiectivDto,
 
         @Valid
         @JsonProperty("masuratoare_grasime_corporala")

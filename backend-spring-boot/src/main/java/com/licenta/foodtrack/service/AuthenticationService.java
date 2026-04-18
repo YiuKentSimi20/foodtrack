@@ -5,12 +5,15 @@ import com.licenta.foodtrack.auth.AuthenticationRequest;
 import com.licenta.foodtrack.auth.AuthenticationResponse;
 import com.licenta.foodtrack.auth.RegisterRequest;
 import com.licenta.foodtrack.config.JwtService;
+import com.licenta.foodtrack.exception.EmailAlreadyExistsException;
+import com.licenta.foodtrack.exception.UsernameAlreadyExistsException;
 import com.licenta.foodtrack.mapper.UtilizatorMapper;
 import com.licenta.foodtrack.model.RolUtilizator;
 import com.licenta.foodtrack.model.Utilizator;
 import com.licenta.foodtrack.repository.UtilizatorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,15 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
+
+        if(utilizatorRepository.existsByUsername(registerRequest.username())){
+            throw new UsernameAlreadyExistsException(registerRequest.username());
+        }
+
+        if(utilizatorRepository.existsByEmail(registerRequest.email())){
+            throw new EmailAlreadyExistsException(registerRequest.email());
+        }
+
         Utilizator utilizator = utilizatorMapper.toUtilizator(registerRequest);
         utilizator.setRole(RolUtilizator.USER);
         utilizator.setPassword(passwordEncoder.encode(registerRequest.password()));
@@ -57,7 +69,7 @@ public class AuthenticationService {
         );
 
         var utilizator = utilizatorRepository.findByUsernameOrEmail(authenticationRequest.identifier(), authenticationRequest.identifier())
-                .orElseThrow();
+                .orElseThrow(() -> new BadCredentialsException("Invalid username/email or password"));
 
         var jwtToken = jwtService.generateToken(utilizator);
 

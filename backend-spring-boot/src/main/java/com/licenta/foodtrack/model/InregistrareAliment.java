@@ -1,10 +1,7 @@
 package com.licenta.foodtrack.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
@@ -31,9 +28,91 @@ public class InregistrareAliment {
     private Double salt100g;
     @Enumerated(EnumType.STRING)
     private NutritionScore nutritionScore;
+    @Enumerated(EnumType.STRING)
+    private TipInregistrare tipInregistrare;
+
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "masa_id", nullable = false)
     private Masa masa;
+
+    @PrePersist
+    public void prePersist() {
+        if(this.tipInregistrare == null){
+            tipInregistrare = TipInregistrare.CATALOG;
+        }
+    }
+
+    public Double calculateTotalCalories() {
+        return getFatCalories() + getCarbohydratesCalories() + getProteinCalories();
+    }
+
+    public Double calculateTotalEnergyKj() {
+        Double fatEnergy = fat100g * 37 * (grams / 100);
+        Double carbohydratesEnergy = carbohydrates100g * 17 * (grams / 100);
+        Double proteinEnergy = protein100g * 17 * (grams / 100);
+
+        return fatEnergy + carbohydratesEnergy + proteinEnergy;
+    }
+
+    public Double getFatCalories() {
+        return safe(fat100g) * 9 * (safe(grams) / 100);
+    }
+
+    public Double getCarbohydratesCalories() {
+        return safe(carbohydrates100g) * 4 * (safe(grams) / 100);
+    }
+
+    public Double getProteinCalories() {
+        return safe(protein100g) * 4 * (safe(grams) / 100);
+    }
+
+    public Double getFatCaloriesPercent() {
+        Double totalEnergy = safe(getTotalEnergyKcal());
+        return calculateTotalCalories() == 0 ? 0 : getFatCalories() / calculateTotalCalories();
+    }
+
+    public Double getCarbohydratesCaloriesPercent() {
+        Double totalEnergy = safe(getTotalEnergyKcal());
+        return calculateTotalCalories() == 0 ? 0 : getCarbohydratesCalories() / calculateTotalCalories();
+    }
+
+    public Double getProteinCaloriesPercent() {
+        Double totalEnergy = safe(getTotalEnergyKcal());
+        return calculateTotalCalories() == 0 ? 0 : getProteinCalories() / calculateTotalCalories();
+    }
+
+    public Double getTotalFrom100g(Double data100g) {
+        return safe(data100g) * (safe(grams) / 100);
+    }
+
+    public Double getTotalEnergyKcal() { return safe(energyKcal100g) * (safe(grams) / 100); }
+    public Double getTotalEnergyKj() { return safe(energyKj100g) * (safe(grams) / 100); }
+    public Double getTotalFat() { return safe(fat100g) * (safe(grams) / 100); }
+    public Double getTotalSaturatedFat() { return safe(saturatedFat100g) * (safe(grams) / 100); }
+    public Double getTotalCarbohydrates() { return safe(carbohydrates100g) * (safe(grams) / 100); }
+    public Double getTotalSugars() { return safe(sugars100g) * (safe(grams) / 100); }
+    public Double getTotalFiber() { return safe(fiber100g) * (safe(grams) / 100); }
+    public Double getTotalProtein() { return safe(protein100g) * (safe(grams) / 100); }
+    public Double getTotalSalt() { return safe(salt100g) * (safe(grams) / 100); }
+
+    public Double getUnsaturatedFat100g() {
+        if (fat100g == null || saturatedFat100g == null) {
+            return null;
+        }
+        return fat100g - saturatedFat100g;
+    }
+
+    public Boolean nutrientsAreValid() {
+        return getTotalEnergyKcal() == getProteinCalories() + getCarbohydratesCalories() + getFatCalories();
+    }
+
+    public Double safe(Double data) {
+        if (data == null) {
+            return 0d;
+        }
+
+        return data;
+    }
 
 }

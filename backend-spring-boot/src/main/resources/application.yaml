@@ -19,4 +19,4 @@ spring:
 
 jwt:
     secret: "123b11faa2a3fab9daa664fe05d8e5872dce72c0e259a84e566d06b06f894a98"
-    access-token-expiration-ms: 3600000
+    access-token-expiration-ms: 36000000

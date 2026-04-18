@@ -1,6 +1,7 @@
 package com.licenta.foodtrack.service;
 
 import com.licenta.foodtrack.dto.OffBarcodeResponse;
+import com.licenta.foodtrack.exception.BarcodeNotFoundException;
 import com.licenta.foodtrack.mapper.AlimentMapper;
 import com.licenta.foodtrack.model.Aliment;
 import com.licenta.foodtrack.repository.AlimentRepository;
@@ -47,18 +48,23 @@ public class AlimentService {
                 .map(alimentRepository::save)
                 .forEach(alimente::add);
 
+        //TODO: Afisare si alimente salvate de utilizator
+
         return alimente;
     }
 
-    public Optional<Aliment> searchByBarcode(String barcode) {
+    public Aliment searchByBarcode(String barcode) {
         // Se cauta in baza de date. Daca nu se gaseste, se apeleaza API-ul OFF
         // Daca API-ul returneaza un produs valid, se salveaza in baza de date si se returneaza
-        return alimentRepository.findByCode(barcode)
+
+        Optional<Aliment> aliment = alimentRepository.findByCode(barcode)
                 .or(() -> openFoodFactsService.getProductByBarcode(barcode)
                         .map(OffBarcodeResponse::product)
                         .map(alimentMapper::toAliment)
                         .filter(a -> a.getCode() != null && !a.getCode().isBlank())
                         .filter(a -> !alimentRepository.existsByCode(a.getCode()))
                         .map(alimentRepository::save));
+
+        return aliment.orElseThrow(() -> new BarcodeNotFoundException(barcode));
     }
 }

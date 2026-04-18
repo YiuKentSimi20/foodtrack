@@ -43,18 +43,6 @@ public class Aliment {
     private NutritionScore nutritionScore;
     private UUID createdByUserId;
 
-    private double getUnsaturatedFat100g() {
-        return fat100g - saturatedFat100g;
-    }
-
-    private double convertToEnergyKcal100g() {
-        double proteinToKcal =  protein100g *  4;
-        double carbohydratesToKcal =  carbohydrates100g *  4;
-        double fatToKcal = fat100g * 9;
-
-        return proteinToKcal + carbohydratesToKcal + fatToKcal;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

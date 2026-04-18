@@ -1,8 +1,6 @@
 package com.licenta.foodtrack.mapper;
 
-import com.licenta.foodtrack.dto.MasuratoareGrasimeCorporalaDto;
-import com.licenta.foodtrack.dto.MasuratoareGreutateDto;
-import com.licenta.foodtrack.dto.MasuratoareInaltimeDto;
+import com.licenta.foodtrack.dto.*;
 import com.licenta.foodtrack.model.MasuratoareGrasimeCorporala;
 import com.licenta.foodtrack.model.MasuratoareGreutate;
 import com.licenta.foodtrack.model.MasuratoareInaltime;
@@ -43,4 +41,30 @@ public class MasuratoriMapper {
         return masuratoare;
     }
 
+    public MasuratoareGreutateResponse toMasuratoareGreutateResponse(MasuratoareGreutate masuratoare) {
+
+        return new MasuratoareGreutateResponse(
+                masuratoare.getId(),
+                masuratoare.getGreutateKg(),
+                masuratoare.getDate()
+        );
+    }
+
+    public MasuratoareInaltimeResponse toMasuratoareInaltimeResponse(MasuratoareInaltime masuratoare) {
+
+        return new MasuratoareInaltimeResponse(
+                masuratoare.getId(),
+                masuratoare.getInaltimeCm(),
+                masuratoare.getDate()
+        );
+    }
+
+    public MasuratoareGrasimeCorporalaResponse toMasuratoareGrasimeCorporalaResponse(MasuratoareGrasimeCorporala masuratoare) {
+
+        return new MasuratoareGrasimeCorporalaResponse(
+                masuratoare.getId(),
+                masuratoare.getGrasimeCorporalaProcent(),
+                masuratoare.getDate()
+        );
+    }
 }

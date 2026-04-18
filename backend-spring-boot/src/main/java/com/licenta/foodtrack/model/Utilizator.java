@@ -1,7 +1,6 @@
 package com.licenta.foodtrack.model;
 
 
-import jakarta.annotation.PreDestroy;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,16 +35,15 @@ public class Utilizator implements UserDetails {
     private LocalDate dataNasterii;
     @Enumerated(EnumType.STRING)
     private GenUtilizator gen;
-    private Double obiectivCaloriiZi;
-    private Double obiectivGreutateKg;
-    private Double obiectivProteineZi;
-    private Double obiectivCarbohidratiZi;
-    private Double obiectivGrasimiZi;
     @Enumerated(EnumType.STRING)
     private NivelActivitate nivelActivitate;
     private Double indiceMasaCorporala;
     private Double rataMetabolicaBazala;
     private Double necesarCaloricMentinere;
+
+
+    @OneToMany(mappedBy = "utilizator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Obiectiv> obiective;
 
     @OneToMany(mappedBy = "utilizator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CategorieMasa> categoriiMese;
@@ -61,6 +59,13 @@ public class Utilizator implements UserDetails {
 
     @OneToMany(mappedBy = "utilizator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Masa> listaMese;
+
+    @PrePersist
+    public void prePersist() {
+        if(this.role == null) {
+            this.role = RolUtilizator.USER;
+        }
+    }
 
     public void addCategoriiMasa(CategorieMasa categorieMasa) {
         if (this.categoriiMese == null) {
@@ -80,6 +85,25 @@ public class Utilizator implements UserDetails {
         addCategoriiMasa(new CategorieMasa("Pranz", 2));
         addCategoriiMasa(new CategorieMasa("Cina", 3));
         addCategoriiMasa(new CategorieMasa("Gustare", 4));
+    }
+
+    public void addObiectiv(Obiectiv obiectiv) {
+
+        if (this.obiective == null) {
+            this.obiective = new ArrayList<>();
+        }
+
+        // Pentru testare omitem validarea
+//        if(obiectiv.nutrientsAreValid()) {
+//            obiective.add(obiectiv);
+//            obiectiv.setUtilizator(this);
+//        } else {
+//            throw new IllegalArgumentException("Caloriile nu sunt egale cu suma caloriilor din macronutrienti.");
+//        }
+//
+        obiectiv.setUtilizator(this);
+        obiective.add(obiectiv);
+
     }
 
     public void addMasuratoareGreutate(MasuratoareGreutate masuratoareGreutate) {
@@ -102,6 +126,7 @@ public class Utilizator implements UserDetails {
         masuratoareInaltime.setUtilizator(this);
     }
 
+
     public void addMasuratoareGrasimeCorporala(MasuratoareGrasimeCorporala grasimeCorporala) {
 
         if (this.masuratoriGrasimeCorporala == null) {
@@ -112,12 +137,39 @@ public class Utilizator implements UserDetails {
         grasimeCorporala.setUtilizator(this);
     }
 
-    @PrePersist
-    public void prePersist() {
-        if(this.role == null) {
-            this.role = RolUtilizator.USER;
-        }
+    public Optional<Double> getLastMasuratoareGreutate() {
+        return Optional.of(this.masuratoriGreutate.getLast().getGreutateKg());
     }
+
+    public Optional<Double> getLastMasuratoareInaltime() {
+        return Optional.of(this.masuratoriInaltime.getLast().getInaltimeCm());
+    }
+
+    public Optional<Double> getLastMasuratoareGrasimeCorporala() {
+        return Optional.of(this.masuratoriGrasimeCorporala.getLast().getGrasimeCorporalaProcent());
+    }
+
+    public Optional<Obiectiv> getObiectivFor(LocalDate date) {
+
+        List<Obiectiv> obiectiveInainteDeData =
+                obiective.stream()
+                        .filter(obiectiv -> obiectiv.getDataStart().isBefore(date) || obiectiv.getDataStart().isEqual(date))
+                        .toList();
+
+        if(obiectiveInainteDeData.isEmpty()) {
+            List<Obiectiv> obiectiveDupaData =
+                    obiective.stream()
+                            .filter(obiectiv -> obiectiv.getDataStart().isAfter(date))
+                            .toList();
+            if(obiectiveDupaData.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(obiectiveDupaData.getFirst());
+        }
+        return Optional.of(obiectiveInainteDeData.getLast());
+    }
+
+    //TODO: Calcule pentru bmi, tdee, etc. pe baza masuratorilor si obiectivelor
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

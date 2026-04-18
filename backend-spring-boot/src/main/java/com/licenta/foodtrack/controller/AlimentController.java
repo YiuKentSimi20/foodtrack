@@ -1,6 +1,7 @@
 package com.licenta.foodtrack.controller;
 
 
+import com.licenta.foodtrack.exception.ValidationExceptionHandler;
 import com.licenta.foodtrack.model.Aliment;
 import com.licenta.foodtrack.service.AlimentService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class AlimentController
 {
     private final AlimentService alimentService;
+    private final ValidationExceptionHandler validationExceptionHandler;
 
     @GetMapping("/search-by-name-mock")
     public ResponseEntity<List<Aliment>> searchByNameMock(@RequestParam String name) {
@@ -32,10 +34,10 @@ public class AlimentController
 
     @GetMapping("/search-by-barcode")
     public ResponseEntity<Aliment> searchByBarcode(@RequestParam String barcode) {
-        Optional<Aliment> aliment = alimentService.searchByBarcode(barcode);
 
-        return aliment.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(alimentService.searchByBarcode(barcode));
     }
 
+    //TODO: Creeare Aliment
 
 }
