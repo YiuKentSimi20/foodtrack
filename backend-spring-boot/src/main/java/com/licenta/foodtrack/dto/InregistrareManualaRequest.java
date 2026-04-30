@@ -11,8 +11,8 @@ import java.time.LocalDate;
 public record InregistrareManualaRequest(
 
         @JsonProperty("nume_masa")
-        @NotBlank(message = "nume_masa is required")
-        String numeMasa,
+        @NotNull(message = "nume_masa is required")
+        Long categorieMasaId,
         @NotNull(message = "data is required")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate data,

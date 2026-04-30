@@ -81,10 +81,15 @@ public class Utilizator implements UserDetails {
             return;
         }
 
-        addCategoriiMasa(new CategorieMasa("Mic Dejun", 1));
-        addCategoriiMasa(new CategorieMasa("Pranz", 2));
-        addCategoriiMasa(new CategorieMasa("Cina", 3));
-        addCategoriiMasa(new CategorieMasa("Gustare", 4));
+        addCategoriiMasa(new CategorieMasa("Mic Dejun", 1, true));
+        addCategoriiMasa(new CategorieMasa("Pranz", 2, true));
+        addCategoriiMasa(new CategorieMasa("Cina", 3, true));
+        addCategoriiMasa(new CategorieMasa("Gustare", 4, true));
+        addCategoriiMasa(new CategorieMasa("Masa 1", 5, false));
+        addCategoriiMasa(new CategorieMasa("Masa 2", 6, false));
+        addCategoriiMasa(new CategorieMasa("Masa 3", 7, false));
+        addCategoriiMasa(new CategorieMasa("Masa 4", 8, false));
+        addCategoriiMasa(new CategorieMasa("Masa 5", 9, false));
     }
 
     public void addObiectiv(Obiectiv obiectiv) {
@@ -93,17 +98,8 @@ public class Utilizator implements UserDetails {
             this.obiective = new ArrayList<>();
         }
 
-        // Pentru testare omitem validarea
-//        if(obiectiv.nutrientsAreValid()) {
-//            obiective.add(obiectiv);
-//            obiectiv.setUtilizator(this);
-//        } else {
-//            throw new IllegalArgumentException("Caloriile nu sunt egale cu suma caloriilor din macronutrienti.");
-//        }
-//
         obiectiv.setUtilizator(this);
         obiective.add(obiectiv);
-
     }
 
     public void addMasuratoareGreutate(MasuratoareGreutate masuratoareGreutate) {
@@ -138,15 +134,18 @@ public class Utilizator implements UserDetails {
     }
 
     public Optional<Double> getLastMasuratoareGreutate() {
-        return Optional.of(this.masuratoriGreutate.getLast().getGreutateKg());
+        return Optional.of(this.masuratoriGreutate.isEmpty() ?
+                0.0 : this.masuratoriGreutate.getLast().getGreutateKg());
     }
 
     public Optional<Double> getLastMasuratoareInaltime() {
-        return Optional.of(this.masuratoriInaltime.getLast().getInaltimeCm());
+        return Optional.of(this.masuratoriInaltime.isEmpty() ?
+                0.0 : this.masuratoriInaltime.getLast().getInaltimeCm());
     }
 
     public Optional<Double> getLastMasuratoareGrasimeCorporala() {
-        return Optional.of(this.masuratoriGrasimeCorporala.getLast().getGrasimeCorporalaProcent());
+        return Optional.of(this.masuratoriGrasimeCorporala.isEmpty() ?
+                0.0 : this.masuratoriGrasimeCorporala.getLast().getGrasimeCorporalaProcent());
     }
 
     public Optional<Obiectiv> getObiectivFor(LocalDate date) {
@@ -169,11 +168,33 @@ public class Utilizator implements UserDetails {
         return Optional.of(obiectiveInainteDeData.getLast());
     }
 
-    //TODO: Calcule pentru bmi, tdee, etc. pe baza masuratorilor si obiectivelor
+    public Double calculateBmi() {
+
+        return getLastMasuratoareGreutate().orElse(0.0) / Math.pow(getLastMasuratoareInaltime().orElse(1.0) / 100, 2);
+    }
+
+    public Double calculateBmr() {
+
+        return 10 * getLastMasuratoareGreutate().orElse(0.0)
+                + 6.25 * getLastMasuratoareInaltime().orElse(0.0)
+                - 5 * (LocalDate.now().getYear() - dataNasterii.getYear())
+                + (gen == GenUtilizator.M ? 5 : -161);
+    }
+
+    public Double calculateTdee() {
+        double bmr = calculateBmr();
+        return switch (nivelActivitate != null ? nivelActivitate : NivelActivitate.SEDENTAR ) {
+            case SEDENTAR -> bmr * 1.2;
+            case MAI_PUTIN_ACTIV -> bmr * 1.375;
+            case ACTIV -> bmr * 1.55;
+            case FOARTE_ACTIV -> bmr * 1.725;
+        };
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+
+        return List.of(() -> role.name());
     }
 
     @Override

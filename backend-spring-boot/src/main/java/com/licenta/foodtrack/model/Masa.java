@@ -20,10 +20,15 @@ public class Masa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nume;
+
+    @ManyToOne
+    @JoinColumn(name = "categorie_masa_id")
+    private CategorieMasa categorieMasa;
+
     private LocalDate dataMesei;
     private String oraMesei;
     private String notiteMasa;
+    //TODO: Adaugat request pentru a adauga detaliile mesei
 
     @OneToMany(mappedBy = "masa", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InregistrareAliment> inregistrariAlimente;
@@ -118,6 +123,5 @@ public class Masa {
 
     //TODO: Calculat calorii nete in fiecare zi
     //TODO: Grupat totaluri pe zile, saptamani, luni
-    //TODO: Azi fac sistemul de cereri si raspunsuri + erori
 
 }

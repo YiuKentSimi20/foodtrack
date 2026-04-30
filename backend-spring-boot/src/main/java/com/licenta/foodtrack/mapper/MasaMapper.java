@@ -12,10 +12,10 @@ public class MasaMapper {
 
     private final InregistrareAlimentMapper inregistrareAlimentMapper;
 
-    public MasaResponse toResponse(Masa masa){
+    public MasaResponse toResponse(Masa masa) {
         return new MasaResponse(
                 masa.getId(),
-                masa.getNume(),
+                masa.getCategorieMasa().getId(),
                 masa.getDataMesei(),
                 masa.getOraMesei(),
                 masa.getNotiteMasa(),

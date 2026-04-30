@@ -25,7 +25,7 @@ public class ObiectivMapper {
                 obiectiv.getCalories(),
                 obiectiv.getProtein(),
                 obiectiv.getCarbohydrates(),
-                obiectiv.getFatCalories()
+                obiectiv.getFat()
         );
     }
 }

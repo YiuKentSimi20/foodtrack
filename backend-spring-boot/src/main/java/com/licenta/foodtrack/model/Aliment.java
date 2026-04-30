@@ -41,6 +41,8 @@ public class Aliment {
     private Double salt100g;
     @Enumerated(EnumType.STRING)
     private NutritionScore nutritionScore;
+    @Enumerated(EnumType.STRING)
+    private CategorieAliment categorie;
     private UUID createdByUserId;
 
     @Override

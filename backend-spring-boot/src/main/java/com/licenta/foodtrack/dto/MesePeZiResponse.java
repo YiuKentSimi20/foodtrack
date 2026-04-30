@@ -40,8 +40,8 @@ public record MesePeZiResponse(
         @JsonProperty("protein_percent")
         Double proteinPercent,
         @JsonProperty("salt_total")
-        Double saltTotal
-
-        // Obiectiv calorii, nutrienti
+        Double saltTotal,
+        @JsonProperty("calorii_nete")
+        Double caloriiNete
 ) {
 }

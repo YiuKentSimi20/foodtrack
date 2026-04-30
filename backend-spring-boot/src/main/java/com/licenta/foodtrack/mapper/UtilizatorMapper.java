@@ -23,6 +23,7 @@ public class UtilizatorMapper {
         utilizator.setEmail(registerRequest.email());
         utilizator.setGen(registerRequest.gen());
         utilizator.setDataNasterii(registerRequest.dataNasterii());
+        utilizator.setNivelActivitate(registerRequest.nivelActivitate());
 
         // Setam masuratori si obiective
 //        utilizator.addObiectiv(

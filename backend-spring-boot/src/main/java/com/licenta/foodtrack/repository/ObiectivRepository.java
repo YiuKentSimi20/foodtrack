@@ -15,4 +15,6 @@ public interface ObiectivRepository extends JpaRepository<Obiectiv, Long> {
     List<Obiectiv> findByUtilizatorId(UUID id);
 
     Optional<Obiectiv> findByUtilizatorIdAndDataStart(UUID utilizatorId, LocalDate dataStart);
+
+    UUID id(Long id);
 }

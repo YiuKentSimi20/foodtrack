@@ -9,6 +9,7 @@ import com.licenta.foodtrack.dto.MasuratoareInaltimeDto;
 import com.licenta.foodtrack.dto.ObiectivDto;
 import com.licenta.foodtrack.model.GenUtilizator;
 import com.licenta.foodtrack.model.NivelActivitate;
+import com.licenta.foodtrack.validation.annotations.EnumNamePattern;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,22 +39,18 @@ public record RegisterRequest(
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate dataNasterii,
 
+        @NotNull(message = "gen is required")
+        @EnumNamePattern(regexp = "M|F|ALTUL", message = "gen must be one of: M, F, ALTUL")
+        @JsonProperty("gen")
         GenUtilizator gen,
 
+        @NotNull(message = "nivel_activitate is required")
+        @EnumNamePattern(
+                regexp = "SEDENTAR|MAI_PUTIN_ACTIV|ACTIV|FOARTE_ACTIV",
+                message = "nivel_activitate must be one of: SEDENTAR, MAI_PUTIN_ACTIV, ACTIV, FOARTE_ACTIV"
+        )
         @JsonProperty("nivel_activitate")
         NivelActivitate nivelActivitate,
-
-        @JsonProperty("imc")
-        @Positive(message = "Indicele de masă corporală trebuie să fie un număr pozitiv")
-        Double indiceMasaCorporala,
-
-        @JsonProperty("bmr")
-        @Positive(message = "Rata metabolică bazală trebuie să fie un număr pozitiv")
-        Double rataMetabolicaBazala,
-
-        @JsonProperty("tdee")
-        @Positive(message = "Necesarul caloric de menținere trebuie să fie un număr pozitiv")
-        Double necesarCaloricMentinere,
 
         @Valid
         @JsonProperty("obiectiv")

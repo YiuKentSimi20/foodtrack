@@ -14,4 +14,6 @@ public interface AlimentRepository extends JpaRepository<Aliment, Long> {
 
     List<Aliment> findByProductNameContainingIgnoreCaseAndIsValidatedTrue(String productName);
 
+    List<Aliment> findByProductNameContainingIgnoreCaseAndCreatedByUserIdAndIsValidatedFalse(String productName, UUID userId);
+
 }

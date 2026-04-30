@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/foodtrack/user/auth")
+@RequestMapping("/foodtrack/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     public final AuthenticationService authenticationService;

@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.springframework.http.ResponseEntity.status;
 
@@ -37,6 +34,17 @@ public class ValidationExceptionHandler {
                 .error("VALIDATION_ERROR")
                 .message("Validation failed for one or more fields.")
                 .fieldErrors(fieldErrors)
+                .timestamp(LocalDateTime.now())
+                .build()
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ApiErrorResponse.builder()
+                .status(400)
+                .error("VALIDATION_ERROR")
+                .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build()
         );
@@ -157,6 +165,18 @@ public class ValidationExceptionHandler {
                 ApiErrorResponse.builder()
                         .status(403)
                         .error("FORBIDDEN")
+                        .message(ex.getMessage())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(ObiectivInvalidNutrientsException.class)
+    public ResponseEntity<ApiErrorResponse> handleObiectivInvalidNutrients(ObiectivInvalidNutrientsException ex) {
+
+        return status(HttpStatus.BAD_REQUEST).body(
+                ApiErrorResponse.builder()
+                        .status(400)
+                        .error("VALIDATION_ERROR")
                         .message(ex.getMessage())
                         .build()
         );

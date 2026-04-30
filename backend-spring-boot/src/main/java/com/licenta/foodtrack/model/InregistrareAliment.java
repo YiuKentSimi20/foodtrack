@@ -1,7 +1,10 @@
 package com.licenta.foodtrack.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -29,6 +32,8 @@ public class InregistrareAliment {
     @Enumerated(EnumType.STRING)
     private NutritionScore nutritionScore;
     @Enumerated(EnumType.STRING)
+    private CategorieAliment categorie;
+    @Enumerated(EnumType.STRING)
     private TipInregistrare tipInregistrare;
 
 
@@ -38,7 +43,7 @@ public class InregistrareAliment {
 
     @PrePersist
     public void prePersist() {
-        if(this.tipInregistrare == null){
+        if (this.tipInregistrare == null) {
             tipInregistrare = TipInregistrare.CATALOG;
         }
     }
@@ -86,15 +91,41 @@ public class InregistrareAliment {
         return safe(data100g) * (safe(grams) / 100);
     }
 
-    public Double getTotalEnergyKcal() { return safe(energyKcal100g) * (safe(grams) / 100); }
-    public Double getTotalEnergyKj() { return safe(energyKj100g) * (safe(grams) / 100); }
-    public Double getTotalFat() { return safe(fat100g) * (safe(grams) / 100); }
-    public Double getTotalSaturatedFat() { return safe(saturatedFat100g) * (safe(grams) / 100); }
-    public Double getTotalCarbohydrates() { return safe(carbohydrates100g) * (safe(grams) / 100); }
-    public Double getTotalSugars() { return safe(sugars100g) * (safe(grams) / 100); }
-    public Double getTotalFiber() { return safe(fiber100g) * (safe(grams) / 100); }
-    public Double getTotalProtein() { return safe(protein100g) * (safe(grams) / 100); }
-    public Double getTotalSalt() { return safe(salt100g) * (safe(grams) / 100); }
+    public Double getTotalEnergyKcal() {
+        return safe(energyKcal100g) * (safe(grams) / 100);
+    }
+
+    public Double getTotalEnergyKj() {
+        return safe(energyKj100g) * (safe(grams) / 100);
+    }
+
+    public Double getTotalFat() {
+        return safe(fat100g) * (safe(grams) / 100);
+    }
+
+    public Double getTotalSaturatedFat() {
+        return safe(saturatedFat100g) * (safe(grams) / 100);
+    }
+
+    public Double getTotalCarbohydrates() {
+        return safe(carbohydrates100g) * (safe(grams) / 100);
+    }
+
+    public Double getTotalSugars() {
+        return safe(sugars100g) * (safe(grams) / 100);
+    }
+
+    public Double getTotalFiber() {
+        return safe(fiber100g) * (safe(grams) / 100);
+    }
+
+    public Double getTotalProtein() {
+        return safe(protein100g) * (safe(grams) / 100);
+    }
+
+    public Double getTotalSalt() {
+        return safe(salt100g) * (safe(grams) / 100);
+    }
 
     public Double getUnsaturatedFat100g() {
         if (fat100g == null || saturatedFat100g == null) {

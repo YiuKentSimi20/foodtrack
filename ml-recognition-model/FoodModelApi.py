@@ -1,8 +1,14 @@
 from fastapi import FastAPI, UploadFile, File
 import uvicorn
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.preprocessing import image # type: ignore
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision
+import torchvision.transforms as transforms
+from torchvision.models import resnet50, ResNet50_Weights
+import pandas as pd
+import os
 import io
 from PIL import Image
 from pathlib import Path
@@ -13,19 +19,85 @@ app = FastAPI(title="FoodTrack AI API", description="Microserviciu pentru recuno
 # 2. Încărcăm modelul la pornirea serverului (ca să nu îl încarce la fiecare poză)
 print("Se incarca modelul AI...")
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "food_recognition_model.keras"
-try:
-    model = tf.keras.models.load_model(MODEL_PATH)
-    print("Model incarcat cu succes!")
-except Exception as e:
-    model = None
-    print(f"Eroare la incarcarea modelului: {e}")
+MODEL_PATH = BASE_DIR / "food_101_model.pth"
 
-# Un dictionar scurt pentru testare
-dictionar_clase = {
-    0: 'alfa-sprouts', 1: 'almonds', 2: 'anchovies', 3: 'aperol-spritz', 
-    4: 'apple', 5: 'apple-crumble', 6: 'apple-pie', 7: 'applesauce'
-}
+def load_model():
+    # Initialize the model architecture (ResNet50)
+    model = torchvision.models.resnet50()
+    model.fc = nn.Sequential(
+        nn.Dropout(0.4),
+        nn.Linear(model.fc.in_features, 101)
+    )
+    
+    # Load the pretrained weights with the correct path
+    MODEL_PATH = "ml-recognition-model/food101_my_model.pth"
+    checkpoint = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
+    
+    # Access the model state dict from the checkpoint
+    model.load_state_dict(checkpoint['model_state_dict'])
+    
+    # Get the class mapping
+    idx_to_class = checkpoint['idx_to_class']
+    
+    model.eval()
+    
+    return model, idx_to_class
+
+def preprocess_image(image):
+    transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    
+    image_tensor = transform(image)
+    image_tensor = image_tensor.unsqueeze(0)
+    
+    return image_tensor, image
+
+def predict_aliment(model, image_tensor, idx_to_class):
+    with torch.no_grad():
+        outputs = model(image_tensor)
+        probabilities = F.softmax(outputs, dim=1)
+        
+        # Get only the top prediction
+        top_prob, top_idx = torch.max(probabilities, 1)
+        predicted_class = idx_to_class[top_idx.item()]
+        
+        return predicted_class, top_prob.item()
+    
+
+def load_data():
+    # List of 101 food classes (you can update this with your actual class names)
+    food_classes = [
+        'apple_pie', 'baby_back_ribs', 'baklava', 'beef_carpaccio', 'beef_tartare',
+        'beet_salad', 'beignets', 'bibimbap', 'bread_pudding', 'breakfast_burrito',
+        'bruschetta', 'caesar_salad', 'cannoli', 'caprese_salad', 'carrot_cake',
+        'ceviche', 'cheesecake', 'cheese_plate', 'chicken_curry', 'chicken_quesadilla',
+        'chicken_wings', 'chocolate_cake', 'chocolate_mousse', 'churros', 'clam_chowder',
+        'club_sandwich', 'crab_cakes', 'creme_brulee', 'croque_madame', 'cup_cakes',
+        'deviled_eggs', 'donuts', 'dumplings', 'edamame', 'eggs_benedict',
+        'escargots', 'falafel', 'filet_mignon', 'fish_and_chips', 'foie_gras',
+        'french_fries', 'french_onion_soup', 'french_toast', 'fried_calamari', 'fried_rice',
+        'frozen_yogurt', 'garlic_bread', 'gnocchi', 'greek_salad', 'grilled_cheese_sandwich',
+        'grilled_salmon', 'guacamole', 'gyoza', 'hamburger', 'hot_and_sour_soup',
+        'hot_dog', 'huevos_rancheros', 'hummus', 'ice_cream', 'lasagna',
+        'lobster_bisque', 'lobster_roll_sandwich', 'macaroni_and_cheese', 'macarons', 'miso_soup',
+        'mussels', 'nachos', 'omelette', 'onion_rings', 'oysters',
+        'pad_thai', 'paella', 'pancakes', 'panna_cotta', 'peking_duck',
+        'pho', 'pizza', 'pork_chop', 'poutine', 'prime_rib',
+        'pulled_pork_sandwich', 'ramen', 'ravioli', 'red_velvet_cake', 'risotto',
+        'samosa', 'sashimi', 'scallops', 'seaweed_salad', 'shrimp_and_grits',
+        'spaghetti_bolognese', 'spaghetti_carbonara', 'spring_rolls', 'steak', 'strawberry_shortcake',
+        'sushi', 'tacos', 'takoyaki', 'tiramisu', 'tuna_tartare', 'waffles'
+    ]
+    
+    return food_classes
+
+print("Loading model and data...")
+model, idx_to_class = load_model()
+print("Model and data loaded successfully!")
 
 @app.post("/api/predict")
 async def predict_food(file: UploadFile = File(...)):
@@ -41,25 +113,18 @@ async def predict_food(file: UploadFile = File(...)):
         
         # O deschidem cu Pillow și o convertim la RGB (ca sa ingnoram canalul transparent dacă e PNG)
         img = Image.open(io.BytesIO(contents)).convert("RGB")
-        
+
         # Pre-procesarea exacta ceruta de model
-        img = img.resize((224, 224))
-        img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array /= 255.0  # Normalizarea pixelilor
+        image_tensor, original_image = preprocess_image(img)
         
         # Facem predictia
-        predictii = model.predict(img_array)
-        id_castigator = int(np.argmax(predictii[0]))
-        probabilitate = float(predictii[0][id_castigator] * 100)
-        
-        nume_mancare = dictionar_clase.get(id_castigator, f"ID_Necunoscut_{id_castigator}")
+        predicted_class, top_prob = predict_aliment(model, image_tensor, idx_to_class)
         
         # Returnam un JSON
         return {
             "status": "success",
-            "mancare": nume_mancare,
-            "siguranta": round(probabilitate, 2)
+            "mancare": predicted_class,
+            "siguranta": round(top_prob, 2)
         }
         
     except Exception as e:

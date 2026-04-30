@@ -26,6 +26,7 @@ public class InregistrareAlimentMapper {
         inregistrareAliment.setProtein100g(aliment.getProtein100g());
         inregistrareAliment.setSalt100g(aliment.getSalt100g());
         inregistrareAliment.setNutritionScore(aliment.getNutritionScore());
+        inregistrareAliment.setCategorie(aliment.getCategorie());
 
         return inregistrareAliment;
     }
@@ -80,6 +81,7 @@ public class InregistrareAlimentMapper {
                 inregistrareAliment.getSalt100g(),
                 inregistrareAliment.getTotalSalt(),
                 inregistrareAliment.getNutritionScore(),
+                inregistrareAliment.getCategorie(),
                 inregistrareAliment.getTipInregistrare(),
                 inregistrareAliment.getMasa().getId()
 

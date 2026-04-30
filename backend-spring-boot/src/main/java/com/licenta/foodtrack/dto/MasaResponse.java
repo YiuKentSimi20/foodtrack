@@ -7,8 +7,8 @@ import java.util.List;
 
 public record MasaResponse(
         Long id,
-        @JsonProperty("nume_masa")
-        String numeMasa,
+        @JsonProperty("categorie_masa_id")
+        Long categorieMasaId,
         LocalDate data,
         String ora,
         String notite,

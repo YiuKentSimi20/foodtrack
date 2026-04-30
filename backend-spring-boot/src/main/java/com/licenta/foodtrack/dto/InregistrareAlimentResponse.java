@@ -1,6 +1,7 @@
 package com.licenta.foodtrack.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.licenta.foodtrack.model.CategorieAliment;
 import com.licenta.foodtrack.model.NutritionScore;
 import com.licenta.foodtrack.model.TipInregistrare;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +14,7 @@ public record InregistrareAlimentResponse(
         String productName,
 
         String brands,
+
         String code,
 
         @JsonProperty("energy_kcal_100g")
@@ -79,6 +81,8 @@ public record InregistrareAlimentResponse(
         Double saltTotal,
 
         NutritionScore nutritionScore,
+
+        CategorieAliment categorie,
 
         @NotNull(message = "tip_inregistrare is required")
         @JsonProperty("tip_inregistrare")

@@ -12,10 +12,6 @@ import java.util.UUID;
 
 public interface MasaRepository extends JpaRepository<Masa, Long> {
 
-    boolean existsByNumeAndDataMeseiAndUtilizatorId(String nume, LocalDate dataMesei, UUID utilizatorId);
-
-    Optional<Masa> findByNumeAndDataMeseiAndUtilizatorId(@NotBlank(message = "nume_masa is required") String s, @NotNull(message = "data is required") LocalDate data, UUID id);
-
     List<Masa> findAllByUtilizatorId(UUID id);
 
     List<Masa> findAllByUtilizatorIdAndDataMeseiBetween(UUID userId, LocalDate startingDate, LocalDate endingDate);
@@ -23,4 +19,8 @@ public interface MasaRepository extends JpaRepository<Masa, Long> {
     List<Masa> findAllByUtilizatorIdAndDataMeseiGreaterThanEqual(UUID userId, LocalDate startingDate);
 
     List<Masa> findAllByUtilizatorIdAndDataMeseiLessThanEqual(UUID userId, LocalDate endingDate);
+
+    boolean existsByCategorieMasaIdAndDataMeseiAndUtilizatorId(Long CategorieMasaId, LocalDate data, UUID idUtilizatorCurent);
+
+    Optional<Masa> findByCategorieMasaIdAndDataMeseiAndUtilizatorId(Long CategorieMasaId, LocalDate dataMesei, UUID utilizatorId);
 }
