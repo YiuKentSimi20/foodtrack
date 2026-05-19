@@ -51,11 +51,12 @@ public class AlimentMapper {
         aliment.setProtein100g(request.protein100g());
         aliment.setSalt100g(request.salt100g());
         aliment.setNutritionScore(NutritionScore.UNKNOWN);
+        aliment.setCategorie(request.categorie());
 
         return aliment;
     }
 
-    public AlimentDto toAlimentDto(Aliment aliment) {
+    public AlimentDto toDto(Aliment aliment) {
         return new AlimentDto(
                 aliment.getId(),
                 aliment.getProductName(),

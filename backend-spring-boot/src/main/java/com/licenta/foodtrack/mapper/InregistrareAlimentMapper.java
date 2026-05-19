@@ -38,9 +38,9 @@ public class InregistrareAlimentMapper {
         if(request.grams() != null) {
             inregistrareAliment.setGrams(request.grams());
         } else {
-            inregistrareAliment.setGrams(1d);
+            inregistrareAliment.setGrams(100d);
         }
-        inregistrareAliment.setEnergyKcal100g(request.calories());
+        inregistrareAliment.setEnergyKcal100g(request.energyKcal());
         inregistrareAliment.setFat100g(request.fat());
         inregistrareAliment.setCarbohydrates100g(request.carbohydrates());
         inregistrareAliment.setProtein100g(request.protein());

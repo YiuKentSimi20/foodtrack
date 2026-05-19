@@ -3,6 +3,7 @@ package com.licenta.foodtrack.mapper;
 
 import com.licenta.foodtrack.dto.MasaResponse;
 import com.licenta.foodtrack.model.Masa;
+import com.licenta.foodtrack.util.MacroProcentsCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,23 +14,31 @@ public class MasaMapper {
     private final InregistrareAlimentMapper inregistrareAlimentMapper;
 
     public MasaResponse toResponse(Masa masa) {
+
+        MacroProcentsCalculator.MacroPercents macroPercents = MacroProcentsCalculator.calcPercentsSumOne(
+                masa.getTotalFat(),
+                masa.getTotalCarbohydrates(),
+                masa.getTotalProtein()
+        );
+
         return new MasaResponse(
                 masa.getId(),
                 masa.getCategorieMasa().getId(),
                 masa.getDataMesei(),
                 masa.getOraMesei(),
                 masa.getNotiteMasa(),
+                masa.calculateTotalGrams(),
                 masa.getTotalEnergyKcal(),
                 masa.getTotalEnergyKj(),
                 masa.getTotalFat(),
-                masa.getFatCaloriesPercent(),
+                macroPercents.fatPercent(),
                 masa.getTotalSaturatedFat(),
                 masa.getTotalCarbohydrates(),
-                masa.getCarbohydratesCaloriesPercent(),
+                macroPercents.carbsPercent(),
                 masa.getTotalSugars(),
                 masa.getTotalFiber(),
                 masa.getTotalProtein(),
-                masa.getProteinCaloriesPercent(),
+                macroPercents.proteinPercent(),
                 masa.getTotalSalt(),
                 masa.getInregistrariAlimente().stream().map(inregistrareAlimentMapper::toResponse).toList()
         );

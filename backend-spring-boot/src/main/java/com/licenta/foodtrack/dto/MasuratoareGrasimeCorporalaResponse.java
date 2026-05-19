@@ -8,6 +8,7 @@ public record MasuratoareGrasimeCorporalaResponse(
         Long id,
         @JsonProperty("grasime_corporala_procent")
         Double grasimeCorporalaProcent,
-        LocalDate date
+        @JsonProperty("data_masuratoare")
+        LocalDate dataMasuratoare
 ) {
 }

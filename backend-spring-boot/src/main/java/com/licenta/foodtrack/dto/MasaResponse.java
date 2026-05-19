@@ -13,6 +13,8 @@ public record MasaResponse(
         String ora,
         String notite,
 
+        @JsonProperty("grams_total")
+        Double gramsTotal,
         @JsonProperty("energy_kcal_total")
         Double energyKcalTotal,
 

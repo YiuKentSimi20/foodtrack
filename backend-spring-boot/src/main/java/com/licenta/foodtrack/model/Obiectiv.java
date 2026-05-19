@@ -40,29 +40,17 @@ public class Obiectiv {
         return protein * 4;
     }
 
-    public Double getFatCaloriesPercent() {
-        return calories == 0 ? 0 : (getFatCalories() / calories) * 100;
-    }
-
-    public Double getCarbohydratesCaloriesPercent() {
-        return calories == 0 ? 0 : (getCarbohydratesCalories() / calories) * 100;
-    }
-
-    public Double getProteinCaloriesPercent() {
-        return calories == 0 ? 0 : (getProtein() / calories) * 100;
-    }
-
     public Double calculateTotalCalories() {
         return getFatCalories() + getCarbohydratesCalories() + getProteinCalories();
     }
 
     public Double calculateNetCalories() {
         //asta ramane asa deocamdata si daca adaug si calorii arse calculez de acolo
-        return utilizator.getNecesarCaloricMentinere() - calories;
+        return utilizator.calculateTdee() - calories;
     }
 
     public Double calculateWeightCaloriesPerWeek() {
-        return (calculateTotalCalories() * 7) / 7700;
+        return -((calculateNetCalories() * 7) / 7700);
     }
 
     public Boolean nutrientsAreValid() {

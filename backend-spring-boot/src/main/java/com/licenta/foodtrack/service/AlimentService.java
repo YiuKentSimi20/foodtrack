@@ -2,6 +2,7 @@ package com.licenta.foodtrack.service;
 
 import com.licenta.foodtrack.dto.AlimentDto;
 import com.licenta.foodtrack.dto.CreateAlimentRequest;
+import com.licenta.foodtrack.dto.DetaliiAlimentResponse;
 import com.licenta.foodtrack.dto.OffBarcodeResponse;
 import com.licenta.foodtrack.exception.BarcodeNotFoundException;
 import com.licenta.foodtrack.exception.DataNotBelongingToUserException;
@@ -10,6 +11,7 @@ import com.licenta.foodtrack.model.Aliment;
 import com.licenta.foodtrack.model.NutritionScore;
 import com.licenta.foodtrack.repository.AlimentRepository;
 import com.licenta.foodtrack.repository.UtilizatorRepository;
+import com.licenta.foodtrack.util.MacroProcentsCalculator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Arrays.stream;
+
 @Service
 @RequiredArgsConstructor
 public class AlimentService {
@@ -25,7 +29,6 @@ public class AlimentService {
     private final OpenFoodFactsService openFoodFactsService;
     private final AlimentMapper alimentMapper;
     private final AlimentRepository alimentRepository;
-    private final UtilizatorRepository utilizatorRepository;
 
     public List<Aliment> searchByNameMock(String name, UUID idUtilizatorCurent) {
 
@@ -45,7 +48,7 @@ public class AlimentService {
         return alimente;
     }
 
-    public List<Aliment> searchByName(String name, UUID idUtilizatorCurent) {
+    public List<AlimentDto> searchByName(String name, UUID idUtilizatorCurent) {
 
         List<Aliment> alimente = alimentRepository.findByProductNameContainingIgnoreCaseAndIsValidatedTrue(name);
 
@@ -60,10 +63,10 @@ public class AlimentService {
                 .map(alimentRepository::save)
                 .forEach(alimente::add);
 
-        return alimente;
+        return alimente.stream().map(alimentMapper::toDto).toList();
     }
 
-    public Aliment searchByBarcode(String barcode) {
+    public AlimentDto searchByBarcode(String barcode) {
         // Se cauta in baza de date. Daca nu se gaseste, se apeleaza API-ul OFF
         // Daca API-ul returneaza un produs valid, se salveaza in baza de date si se returneaza
 
@@ -75,7 +78,7 @@ public class AlimentService {
                         .filter(a -> !alimentRepository.existsByCode(a.getCode()))
                         .map(alimentRepository::save));
 
-        return aliment.orElseThrow(() -> new BarcodeNotFoundException(barcode));
+        return alimentMapper.toDto(aliment.orElseThrow(() -> new BarcodeNotFoundException(barcode)));
     }
 
     public AlimentDto addAliment(CreateAlimentRequest request, UUID idUtilizatorCurent) {
@@ -85,11 +88,11 @@ public class AlimentService {
         aliment.setIsValidated(false);
         aliment.setCreatedByUserId(idUtilizatorCurent);
 
-        return alimentMapper.toAlimentDto(alimentRepository.save(aliment));
+        return alimentMapper.toDto(alimentRepository.save(aliment));
 
     }
 
-    public AlimentDto updateAliment(@Valid CreateAlimentRequest request, Long id, UUID idUtilizatorCurent) {
+    public AlimentDto updateAliment(CreateAlimentRequest request, Long id, UUID idUtilizatorCurent) {
 
         Aliment aliment = alimentRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Alimentul cu id-ul " + id + " nu a fost găsit"));
@@ -98,6 +101,7 @@ public class AlimentService {
             throw new DataNotBelongingToUserException("Alimentul cu ID-ul " + id + " nu apartine utilizatorului curent.");
         }
 
+        aliment.setId(id);
         if (request.productName() != null) { aliment.setProductName(request.productName()); }
         if (request.brands() != null) { aliment.setBrands(request.brands()); }
         if (request.code() != null) { aliment.setCode(request.code()); }
@@ -109,12 +113,64 @@ public class AlimentService {
         if (request.fiber100g() != null) { aliment.setFiber100g(request.fiber100g()); }
         if (request.protein100g() != null) { aliment.setProtein100g(request.protein100g()); }
         if (request.salt100g() != null) { aliment.setSalt100g(request.salt100g()); }
+        if (request.categorie() != null) { aliment.setCategorie(request.categorie()); }
 
         // La update, alimentul trebuie revalidat
         aliment.setIsValidated(false);
         aliment.setNutritionScore(NutritionScore.UNKNOWN);
 
-        return alimentMapper.toAlimentDto(alimentRepository.save(aliment));
+        return alimentMapper.toDto(alimentRepository.save(aliment));
     }
 
+    public AlimentDto validateAliment(Long id) {
+
+        Aliment aliment = alimentRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Alimentul cu id-ul " + id + " nu a fost găsit"));
+
+        aliment.setIsValidated(true);
+
+
+
+        return alimentMapper.toDto(alimentRepository.save(aliment));
+    }
+
+    public List<AlimentDto> getAlimenteUtilizator(UUID idUtilizatorCurent) {
+
+        return alimentRepository.findAllByCreatedByUserId(idUtilizatorCurent)
+                .stream()
+                .map(alimentMapper::toDto)
+                .toList();
+    }
+
+    public List<AlimentDto> getAlimenteNevalidate(UUID id) {
+
+        return alimentRepository.findAllByIsValidatedFalse(id)
+                .stream()
+                .map(alimentMapper::toDto)
+                .toList();
+    }
+
+    public DetaliiAlimentResponse getDetaliiAliment(AlimentDto alimentDto, UUID id) {
+
+        Aliment aliment = new Aliment();
+        aliment.setProtein100g(alimentDto.protein100g());
+        aliment.setCarbohydrates100g(alimentDto.carbohydrates100g());
+        aliment.setFat100g(alimentDto.fat100g());
+        aliment.setEnergyKcal100g(alimentDto.energyKcal100g());
+
+        MacroProcentsCalculator.MacroPercents macroPercents = MacroProcentsCalculator.calcPercentsSumOne(
+                aliment.getFat100g(),
+                aliment.getCarbohydrates100g(),
+                aliment.getProtein100g()
+        );
+
+        Double densitateCalorica = aliment.getEnergyKcal100g() / 100;
+
+        return new DetaliiAlimentResponse(
+                densitateCalorica,
+                macroPercents.proteinPercent(),
+                macroPercents.carbsPercent(),
+                macroPercents.fatPercent()
+        );
+    }
 }

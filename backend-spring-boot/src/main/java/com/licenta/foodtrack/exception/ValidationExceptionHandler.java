@@ -3,6 +3,7 @@ package com.licenta.foodtrack.exception;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.licenta.foodtrack.dto.ApiErrorResponse;
 import com.licenta.foodtrack.dto.FieldErrorItem;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -181,5 +182,4 @@ public class ValidationExceptionHandler {
                         .build()
         );
     }
-
 }

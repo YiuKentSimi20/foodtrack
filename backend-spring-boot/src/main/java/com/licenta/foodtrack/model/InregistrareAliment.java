@@ -36,7 +36,6 @@ public class InregistrareAliment {
     @Enumerated(EnumType.STRING)
     private TipInregistrare tipInregistrare;
 
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "masa_id", nullable = false)
     private Masa masa;
@@ -132,6 +131,10 @@ public class InregistrareAliment {
             return null;
         }
         return fat100g - saturatedFat100g;
+    }
+
+    public Double getTotalUnsaturatedFat() {
+        return getUnsaturatedFat100g() * (safe(grams) / 100);
     }
 
     public Boolean nutrientsAreValid() {

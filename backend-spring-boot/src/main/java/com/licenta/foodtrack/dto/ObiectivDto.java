@@ -8,9 +8,9 @@ import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 
 public record ObiectivDto(
-        @NotNull(message = "data_masuratoare is required")
-        @PastOrPresent(message = "data_masuratoare trebuie sa fie in trecut sau acum")
-        @JsonProperty("data_masuratoare")
+        @NotNull(message = "data is required")
+        @PastOrPresent(message = "data trebuie sa fie in trecut sau acum")
+        @JsonProperty("data")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate data,
         @JsonProperty("obiectiv_calorii_zi")

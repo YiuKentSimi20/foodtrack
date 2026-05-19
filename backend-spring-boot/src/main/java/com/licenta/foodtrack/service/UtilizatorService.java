@@ -22,11 +22,13 @@ public class UtilizatorService {
 
     public DatePersonaleResponse getDatePersonale(UUID id) {
 
-        Utilizator utilizator = utilizatorRepository.findById(id).get();
+        Utilizator utilizator = utilizatorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost găsit"));;
 
         return new DatePersonaleResponse(
                 utilizator.getUsername(),
                 utilizator.getEmail(),
+                utilizator.getRole().toString(),
                 utilizator.getDataNasterii(),
                 Period.between(utilizator.getDataNasterii(), LocalDate.now()).getYears(),
                 utilizator.getGen(),
@@ -39,7 +41,8 @@ public class UtilizatorService {
 
     public DatePersonaleResponse modificaDatePersonale(ModificaDatePersonaleRequest request, UUID id) {
 
-        Utilizator utilizator = utilizatorRepository.findById(id).get();
+        Utilizator utilizator = utilizatorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost găsit"));;
 
         if(request.username()!=null)  {
             utilizator.setUsername(request.username());
@@ -62,6 +65,7 @@ public class UtilizatorService {
         return new DatePersonaleResponse(
                 utilizator.getUsername(),
                 utilizator.getEmail(),
+                utilizator.getRole().toString(),
                 utilizator.getDataNasterii(),
                 Period.between(utilizator.getDataNasterii(), LocalDate.now()).getYears(),
                 utilizator.getGen(),

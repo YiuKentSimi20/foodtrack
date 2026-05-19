@@ -10,8 +10,8 @@ import java.time.LocalDate;
 
 public record InregistrareManualaRequest(
 
-        @JsonProperty("nume_masa")
-        @NotNull(message = "nume_masa is required")
+        @JsonProperty("categorie_masa_id")
+        @NotNull(message = "categorie_masa_id is required")
         Long categorieMasaId,
         @NotNull(message = "data is required")
         @JsonFormat(pattern = "yyyy-MM-dd")
@@ -20,8 +20,9 @@ public record InregistrareManualaRequest(
         @Positive
         Double grams,
 
-        @Positive
-        Double calories,
+        @Positive(message = "energy_kcal must be a positive number")
+        @JsonProperty("energy_kcal")
+        Double energyKcal,
         @NotNull(message = "fat is required")
         @Positive(message = "fat must be a positive number")
         Double fat,

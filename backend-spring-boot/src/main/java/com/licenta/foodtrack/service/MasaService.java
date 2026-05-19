@@ -3,11 +3,13 @@ package com.licenta.foodtrack.service;
 
 import com.licenta.foodtrack.dto.*;
 import com.licenta.foodtrack.exception.DataNotBelongingToUserException;
+import com.licenta.foodtrack.mapper.AlimentMapper;
 import com.licenta.foodtrack.mapper.CategorieMasaMapper;
 import com.licenta.foodtrack.mapper.InregistrareAlimentMapper;
 import com.licenta.foodtrack.mapper.MasaMapper;
 import com.licenta.foodtrack.model.*;
 import com.licenta.foodtrack.repository.*;
+import com.licenta.foodtrack.util.MacroProcentsCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +20,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class MasaService {
-
     private final MasaRepository masaRepository;
+
     private final AlimentRepository alimentRepository;
     private final InregistrareAlimentRepository inregistrareAlimentRepository;
     private final UtilizatorRepository utilizatorRepository;
@@ -27,6 +29,15 @@ public class MasaService {
     private final MasaMapper masaMapper;
     private final CategorieMasaRepository categorieMasaRepository;
     private final CategorieMasaMapper categorieMasaMapper;
+    private final AlimentMapper alimentMapper;
+
+    public MasaResponse getMasaById(Long id, UUID idUtiizator) {
+
+        return masaRepository.findById(id)
+                .filter(masa -> masa.getUtilizator().getId().equals(idUtiizator))
+                .map(masaMapper::toResponse)
+                .orElseThrow(() -> new IllegalStateException("Masa cu ID-ul " + id + " nu a fost găsită pentru utilizatorul curent."));
+    }
 
     public InregistrareAlimentResponse adaugaInregistrareAliment(InregistrareAlimentRequest request, UUID idUtilizatorCurent) {
 
@@ -63,7 +74,7 @@ public class MasaService {
         CategorieMasa categorieMasa = categorieMasaRepository.findById(request.categorieMasaId())
                 .orElseThrow(() -> new IllegalStateException("Categoria mesei cu ID-ul " + request.categorieMasaId() + " nu a fost găsită."));
 
-        if (categorieMasa.getUtilizator().getId() != idUtilizatorCurent) {
+        if (!categorieMasa.getUtilizator().getId().equals(idUtilizatorCurent)) {
             throw new DataNotBelongingToUserException("Categoria mesei cu ID-ul " + request.categorieMasaId() + " nu aparține utilizatorului curent.");
         }
 
@@ -106,26 +117,53 @@ public class MasaService {
                 .toList();
     }
 
-    public List<MesePeZiResponse> getRaport(UUID idUtilizatorCurent) {
+    public List<MesePeZiResponse> getRaport(LocalDate startDate, LocalDate endDate,  UUID idUtilizatorCurent) {
 
         Utilizator utilizator = utilizatorRepository.findById(idUtilizatorCurent)
                 .orElseThrow(() -> new IllegalStateException("Utilizatorul cu ID-ul " + idUtilizatorCurent + " nu a fost găsit."));
 
-        List<Masa> mese = masaRepository.findAllByUtilizatorId(idUtilizatorCurent);
+        List<Masa> mese = masaRepository.findAllByUtilizatorId(idUtilizatorCurent).stream().filter(
+                masa -> masa.getCategorieMasa().getIsActive()
+        ).toList();
 
         Map<LocalDate, List<Masa>> mesePeZile = mese.stream()
-                .sorted(Comparator.comparing(Masa::getDataMesei))
-                .collect(Collectors.groupingBy(
-                        Masa::getDataMesei,
-                        TreeMap::new,
-                        Collectors.toList()
-                ));
+                .collect(Collectors.groupingBy(Masa::getDataMesei));
+
+        for(LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            List<Masa> meseZi =  mesePeZile.getOrDefault(date, List.of());
+             if(meseZi.isEmpty()) {
+                 mesePeZile.put(date, List.of());
+             }
+
+        }
 
         List<MesePeZiResponse> mesePeZiResponse = new ArrayList<>();
 
         mesePeZile.forEach((date, masa) -> {
             Obiectiv obiectiv = utilizator.getObiectivFor(date).orElseThrow(() -> new IllegalStateException("Nu exista obiective setate"));
             Double caloriiNete = utilizator.calculateTdee() - masa.stream().map(Masa::getTotalEnergyKcal).mapToDouble(Double::doubleValue).sum();
+
+            Double totalGrams = masa.stream().map(Masa::calculateTotalGrams).mapToDouble(Double::doubleValue).sum();
+            Double totalEnergyKcal = masa.stream().map(Masa::getTotalEnergyKcal).mapToDouble(Double::doubleValue).sum();
+            Double totalEnergyKj = masa.stream().map(Masa::getTotalEnergyKj).mapToDouble(Double::doubleValue).sum();
+            Double totalFat = masa.stream().map(Masa::getTotalFat).mapToDouble(Double::doubleValue).sum();
+            Double totalSaturatedFat = masa.stream().map(Masa::getTotalSaturatedFat).mapToDouble(Double::doubleValue).sum();
+            Double totalCarbohydrates = masa.stream().map(Masa::getTotalCarbohydrates).mapToDouble(Double::doubleValue).sum();
+            Double totalSugars = masa.stream().map(Masa::getTotalSugars).mapToDouble(Double::doubleValue).sum();
+            Double totalFiber = masa.stream().map(Masa::getTotalFiber).mapToDouble(Double::doubleValue).sum();
+            Double totalProtein = masa.stream().map(Masa::getTotalProtein).mapToDouble(Double::doubleValue).sum();
+            Double totalSalt = masa.stream().map(Masa::getTotalSalt).mapToDouble(Double::doubleValue).sum();
+
+            MacroProcentsCalculator.MacroPercents macroPercents = MacroProcentsCalculator.calcPercentsSumOne(
+                    totalFat, totalCarbohydrates, totalProtein
+            );
+
+            MacroProcentsCalculator.MacroPercents obiectivMacroProcents = MacroProcentsCalculator.calcPercentsSumOne(
+                    obiectiv.getFat(),
+                    obiectiv.getCarbohydrates(),
+                    obiectiv.getProtein()
+            );
+
 
 
             mesePeZiResponse.add(new MesePeZiResponse(
@@ -135,20 +173,24 @@ public class MasaService {
                                     .toList(),
                             obiectiv.getCalories(),
                             obiectiv.getProtein(),
+                            obiectivMacroProcents.proteinPercent(),
                             obiectiv.getCarbohydrates(),
+                            obiectivMacroProcents.carbsPercent(),
                             obiectiv.getFat(),
-                            masa.stream().map(Masa::getTotalEnergyKcal).mapToDouble(Double::doubleValue).sum(),
-                            masa.stream().map(Masa::getTotalEnergyKj).mapToDouble(Double::doubleValue).sum(),
-                            masa.stream().map(Masa::getTotalFat).mapToDouble(Double::doubleValue).sum(),
-                            masa.stream().map(Masa::getFatCaloriesPercent).mapToDouble(Double::doubleValue).average().orElse(0.0),
-                            masa.stream().map(Masa::getTotalSaturatedFat).mapToDouble(Double::doubleValue).sum(),
-                            masa.stream().map(Masa::getTotalCarbohydrates).mapToDouble(Double::doubleValue).sum(),
-                            masa.stream().map(Masa::getCarbohydratesCaloriesPercent).mapToDouble(Double::doubleValue).average().orElse(0.0),
-                            masa.stream().map(Masa::getTotalSugars).mapToDouble(Double::doubleValue).sum(),
-                            masa.stream().map(Masa::getTotalFiber).mapToDouble(Double::doubleValue).sum(),
-                            masa.stream().map(Masa::getTotalProtein).mapToDouble(Double::doubleValue).sum(),
-                            masa.stream().map(Masa::getProteinCaloriesPercent).mapToDouble(Double::doubleValue).average().orElse(0.0),
-                            masa.stream().map(Masa::getTotalSalt).mapToDouble(Double::doubleValue).sum(),
+                            obiectivMacroProcents.fatPercent(),
+                            totalGrams,
+                            totalEnergyKcal,
+                            totalEnergyKj,
+                            totalFat,
+                            macroPercents.fatPercent(),
+                            totalSaturatedFat,
+                            totalCarbohydrates,
+                            macroPercents.carbsPercent(),
+                            totalSugars,
+                            totalFiber,
+                            totalProtein,
+                            macroPercents.proteinPercent(),
+                            totalSalt,
                             caloriiNete
                             //TODO: De facut mai eficient
                     )
@@ -248,11 +290,11 @@ public class MasaService {
 
                     categorieMasa.setNume(categorieMasaDto.nume());
                     categorieMasa.setNumarOrdine(categorieMasaDto.numarOrdine());
+                    categorieMasa.setIsActive(categorieMasaDto.isActive());
                 });
 
         return categorieMasaRepository.saveAll(categoriiMese).stream()
                 .map(categorieMasaMapper::toDto)
                 .toList();
     }
-
 }

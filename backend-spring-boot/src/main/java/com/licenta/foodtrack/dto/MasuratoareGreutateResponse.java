@@ -8,6 +8,7 @@ public record MasuratoareGreutateResponse(
         Long id,
         @JsonProperty("greutate_kg")
         Double greutateKg,
-        LocalDate date
+        @JsonProperty("data_masuratoare")
+        LocalDate dataMasuratoare
 ) {
 }

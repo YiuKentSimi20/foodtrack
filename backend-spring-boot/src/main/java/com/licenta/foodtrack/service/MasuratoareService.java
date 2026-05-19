@@ -4,11 +4,9 @@ import com.licenta.foodtrack.dto.*;
 import com.licenta.foodtrack.exception.ObiectivInvalidNutrientsException;
 import com.licenta.foodtrack.mapper.MasuratoriMapper;
 import com.licenta.foodtrack.mapper.ObiectivMapper;
-import com.licenta.foodtrack.model.MasuratoareGrasimeCorporala;
-import com.licenta.foodtrack.model.MasuratoareGreutate;
-import com.licenta.foodtrack.model.MasuratoareInaltime;
-import com.licenta.foodtrack.model.Obiectiv;
+import com.licenta.foodtrack.model.*;
 import com.licenta.foodtrack.repository.*;
+import com.licenta.foodtrack.util.MacroProcentsCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -51,16 +49,43 @@ public class MasuratoareService {
                 .toList();
     }
 
-    public List<ObiectivDto> getObiective(UUID idUtilizatorCurent) {
+    public List<ObiectivResponse> getObiective(UUID idUtilizatorCurent) {
+
+        Utilizator utilizator = utilizatorRepository.findById(idUtilizatorCurent)
+                .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost găsit"));
+
 
         return obiectivRepository.findByUtilizatorId(idUtilizatorCurent)
                 .stream()
-                .map(o -> new ObiectivDto(
-                        o.getDataStart(),
-                        o.getCalories(),
-                        o.getProtein(),
-                        o.getCarbohydrates(),
-                        o.getFat())
+                .map(o -> {
+                    MacroProcentsCalculator.MacroPercents macroPercents = MacroProcentsCalculator.calcPercentsSumOne(
+                            o.getFat(),
+                            o.getCarbohydrates(),
+                            o.getProtein()
+                    );
+
+                    Double lastMasuratoareGreutate = utilizator.getLastMasuratoareGreutate().orElseThrow(() -> new RuntimeException("Utilizatorul nu are măsurătoare de greutate"));
+
+                    Double proteinKgCorp = o.getProtein() / lastMasuratoareGreutate;
+                    Double carbsKgCorp = o.getCarbohydrates() / lastMasuratoareGreutate;
+                    Double fatKgCorp = o.getFat() / lastMasuratoareGreutate;
+
+                    return new ObiectivResponse(
+                            o.getDataStart(),
+                            o.getCalories(),
+                            o.getProtein(),
+                            macroPercents.proteinPercent(),
+                            o.getCarbohydrates(),
+                            macroPercents.carbsPercent(),
+                            o.getFat(),
+                            macroPercents.fatPercent(),
+                            proteinKgCorp,
+                            carbsKgCorp,
+                            fatKgCorp,
+                            o.calculateNetCalories(),
+                            o.calculateWeightCaloriesPerWeek()
+                    );
+                        }
                 )
                 .toList();
     }
@@ -127,5 +152,42 @@ public class MasuratoareService {
         }
 
         return obiectivMapper.toObiectivDto(obiectivRepository.save(obiectiv));
+    }
+
+    public ObiectivResponse getObiectivPreview(ObiectivDto obiectivDto, UUID id) {
+
+        Utilizator utilizator = utilizatorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost găsit"));
+
+        Obiectiv obiectiv = obiectivMapper.toObiectiv(obiectivDto);
+        obiectiv.setUtilizator(utilizator);
+
+        MacroProcentsCalculator.MacroPercents macroPercents = MacroProcentsCalculator.calcPercentsSumOne(
+                obiectiv.getFat(),
+                obiectiv.getCarbohydrates(),
+                obiectiv.getProtein()
+        );
+
+        Double lastMasuratoareGreutate = utilizator.getLastMasuratoareGreutate().orElseThrow(() -> new RuntimeException("Utilizatorul nu are măsurătoare de greutate"));
+
+        Double proteinKgCorp = obiectiv.getProtein() / lastMasuratoareGreutate;
+        Double carbsKgCorp = obiectiv.getCarbohydrates() / lastMasuratoareGreutate;
+        Double fatKgCorp = obiectiv.getFat() / lastMasuratoareGreutate;
+
+        return new ObiectivResponse(
+                obiectiv.getDataStart(),
+                obiectiv.getCalories(),
+                obiectiv.getProtein(),
+                macroPercents.proteinPercent(),
+                obiectiv.getCarbohydrates(),
+                macroPercents.carbsPercent(),
+                obiectiv.getFat(),
+                macroPercents.fatPercent(),
+                proteinKgCorp,
+                carbsKgCorp,
+                fatKgCorp,
+                obiectiv.calculateNetCalories(),
+                obiectiv.calculateWeightCaloriesPerWeek()
+        );
     }
 }

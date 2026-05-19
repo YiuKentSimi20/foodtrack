@@ -80,6 +80,7 @@ public record InregistrareAlimentResponse(
         @JsonProperty("salt_total")
         Double saltTotal,
 
+        @JsonProperty("nutrition_score")
         NutritionScore nutritionScore,
 
         CategorieAliment categorie,

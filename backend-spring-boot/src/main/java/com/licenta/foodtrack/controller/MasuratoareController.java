@@ -40,7 +40,7 @@ public class MasuratoareController {
     }
 
     @GetMapping("/obiective")
-    public ResponseEntity<List<ObiectivDto>> getObiective(@AuthenticationPrincipal Utilizator utilizatorCurent) {
+    public ResponseEntity<List<ObiectivResponse>> getObiective(@AuthenticationPrincipal Utilizator utilizatorCurent) {
 
         return ResponseEntity.ok(masuratoareService.getObiective(utilizatorCurent.getId()));
     }
@@ -96,6 +96,14 @@ public class MasuratoareController {
                 .data(masuratoareService.adaugaObiectiv(obiectivDto, utilizatorCurent.getId()))
                 .build()
         );
+    }
+
+    @GetMapping("/obiective/preview")
+    public ResponseEntity<ObiectivResponse> getObiectivPreview(
+            @Valid @RequestBody ObiectivDto obiectivDto,
+            @AuthenticationPrincipal Utilizator utilizator) {
+
+        return ResponseEntity.ok(masuratoareService.getObiectivPreview(obiectivDto, utilizator.getId()));
     }
 
 

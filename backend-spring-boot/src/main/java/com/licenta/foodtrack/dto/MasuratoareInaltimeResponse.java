@@ -8,6 +8,7 @@ public record MasuratoareInaltimeResponse(
         Long id,
         @JsonProperty("inaltime_cm")
         Double inaltimeCm,
-        LocalDate date
+        @JsonProperty("data_masuratoare")
+        LocalDate dataMasuratoare
 ) {
 }

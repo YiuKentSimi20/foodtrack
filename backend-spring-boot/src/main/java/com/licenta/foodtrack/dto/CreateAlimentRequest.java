@@ -2,12 +2,9 @@ package com.licenta.foodtrack.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.licenta.foodtrack.model.CategorieAliment;
-import jakarta.persistence.Enumerated;
+import com.licenta.foodtrack.validation.annotations.EnumNamePattern;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.springframework.security.core.parameters.P;
-
-import java.util.UUID;
 
 public record CreateAlimentRequest(
         @JsonProperty("product_name")
@@ -38,6 +35,15 @@ public record CreateAlimentRequest(
         Double protein100g,
         @JsonProperty("salt_100g")
         Double salt100g,
+
+        @EnumNamePattern(
+                regexp = "ALTELE|BUTURI|BRANZETURI|CARNE|CEREALE|CONDIMENTE|DULCIURI|FAST_FOOD|FRUCTE|GRASIMI|LACTATE|" +
+                        "LEGUME|MANCARE_GATITA|MEZELURI|OUA|PAINE|PERSONAL|PESTE|SEMINTE|SNACKURI|SOSURI|SUPLIMENTE",
+                message = "categorie must be one of: ALTELE, BUTURI, BRANZETURI, CARNE, CEREALE, CONDIMENTE, DULCIURI," +
+                        " FAST_FOOD, FRUCTE, GRASIMI, LACTATE, LEGUME, MANCARE_GATITA, MEZELURI, OUA, PAINE, PERSONAL, " +
+                        "PESTE, SEMINTE, SNACKURI, SOSURI, SUPLIMENTE"
+        )
+        @JsonProperty("categorie")
         CategorieAliment categorie
 
 ) {

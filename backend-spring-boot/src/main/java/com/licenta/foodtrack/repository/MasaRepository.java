@@ -23,4 +23,5 @@ public interface MasaRepository extends JpaRepository<Masa, Long> {
     boolean existsByCategorieMasaIdAndDataMeseiAndUtilizatorId(Long CategorieMasaId, LocalDate data, UUID idUtilizatorCurent);
 
     Optional<Masa> findByCategorieMasaIdAndDataMeseiAndUtilizatorId(Long CategorieMasaId, LocalDate dataMesei, UUID utilizatorId);
+
 }

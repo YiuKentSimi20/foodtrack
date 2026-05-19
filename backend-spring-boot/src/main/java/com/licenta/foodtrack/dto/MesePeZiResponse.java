@@ -8,15 +8,22 @@ import java.util.List;
 public record MesePeZiResponse(
         LocalDate data,
         List<MasaResponse> mese,
-
         @JsonProperty("obiectiv_calorii")
         Double obiectivCalorii,
         @JsonProperty("obiectiv_proteine")
         Double obiectivProteine,
+        @JsonProperty("obiectiv_proteine_procent")
+        Double obiectivProteineProcent,
         @JsonProperty("obiectiv_carbohidrati")
         Double obiectivCarbohidrati,
+        @JsonProperty("obiectiv_carbohidrati_procent")
+        Double obiectivCarbohidratiProcent,
         @JsonProperty("obiectiv_grasimi")
         Double obiectivGrasimi,
+        @JsonProperty("obiectiv_grasimi_procent")
+        Double obiectivGrasimiProcent,
+        @JsonProperty("grams_total")
+        Double gramsTotal,
         @JsonProperty("energy_kcal_total")
         Double energyKcalTotal,
         @JsonProperty("energy_kj_total")

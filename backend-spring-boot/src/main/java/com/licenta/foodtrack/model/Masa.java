@@ -37,31 +37,43 @@ public class Masa {
     @JoinColumn(name = "utilizator_id")
     private Utilizator utilizator;
 
+    public Double calculateTotalGrams() {
+
+        return inregistrariAlimente.stream()
+                .mapToDouble(InregistrareAliment::getGrams)
+                .sum();
+    }
+
     public Double calculateTotalCalories() {
+
         return inregistrariAlimente.stream()
                 .mapToDouble(InregistrareAliment::calculateTotalCalories)
                 .sum();
     }
 
     public Double getTotalEnergyKcal() {
+
         return inregistrariAlimente.stream()
                 .mapToDouble(InregistrareAliment::getTotalEnergyKcal)
                 .sum();
     }
 
     public Double getTotalEnergyKj() {
+
         return inregistrariAlimente.stream()
                 .mapToDouble(InregistrareAliment::getTotalEnergyKj)
                 .sum();
     }
 
     public Double getTotalFat() {
+
         return inregistrariAlimente.stream()
                 .mapToDouble(InregistrareAliment::getTotalFat)
                 .sum();
     }
 
     public Double getTotalSaturatedFat() {
+
         return inregistrariAlimente.stream()
                 .mapToDouble(InregistrareAliment::getTotalSaturatedFat)
                 .sum();
@@ -74,24 +86,28 @@ public class Masa {
     }
 
     public Double getTotalSugars() {
+
         return inregistrariAlimente.stream()
                 .mapToDouble(InregistrareAliment::getTotalSugars)
                 .sum();
     }
 
     public Double getTotalFiber() {
+
         return inregistrariAlimente.stream()
                 .mapToDouble(InregistrareAliment::getTotalFiber)
                 .sum();
     }
 
     public Double getTotalProtein() {
+
         return inregistrariAlimente.stream()
                 .mapToDouble(InregistrareAliment::getTotalProtein)
                 .sum();
     }
 
     public Double getTotalSalt() {
+
         return inregistrariAlimente.stream()
                 .mapToDouble(InregistrareAliment::getTotalSalt)
                 .sum();
@@ -110,14 +126,17 @@ public class Masa {
     }
 
     public Double getFatCaloriesPercent() {
+
         return calculateTotalCalories() == 0 ? 0 : (getFatCalories() / calculateTotalCalories());
     }
 
     public Double getCarbohydratesCaloriesPercent() {
+
         return calculateTotalCalories() == 0 ? 0 : (getCarbohydratesCalories() / calculateTotalCalories());
     }
 
     public Double getProteinCaloriesPercent() {
+
         return calculateTotalCalories() == 0 ? 0 : (getProteinCalories() / calculateTotalCalories());
     }
 

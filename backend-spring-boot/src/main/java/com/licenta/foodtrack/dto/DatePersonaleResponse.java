@@ -9,6 +9,7 @@ import java.time.LocalDate;
 public record DatePersonaleResponse(
         String username,
         String email,
+        String rol,
         @JsonProperty("data_nasterii")
         LocalDate dataNasterii,
         Integer varsta,

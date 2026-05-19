@@ -22,6 +22,12 @@ public class MasaController {
 
     private final MasaService masaService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<MasaResponse> getMasaById(@PathVariable Long id, @AuthenticationPrincipal Utilizator utilizator){
+
+        return ResponseEntity.ok(masaService.getMasaById(id, utilizator.getId()));
+    }
+
     @GetMapping("/mese")
     public ResponseEntity<List<MasaResponse>> getMese(
             @RequestParam(required = false) LocalDate startingDate,
@@ -32,9 +38,12 @@ public class MasaController {
     }
 
     @GetMapping("/raport")
-    public ResponseEntity<List<MesePeZiResponse>> getRaport(@AuthenticationPrincipal Utilizator utilizatorCurent) {
+    public ResponseEntity<List<MesePeZiResponse>> getRaport(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
+            @AuthenticationPrincipal Utilizator utilizator) {
 
-        return ResponseEntity.ok(masaService.getRaport(utilizatorCurent.getId()));
+        return ResponseEntity.ok(masaService.getRaport(startDate, endDate, utilizator.getId()));
 
         //TODO: La raport trebuie sa
     }
@@ -42,12 +51,12 @@ public class MasaController {
     @PostMapping("/adauga-inregistrare-aliment")
     public ResponseEntity<ApiResponse<InregistrareAlimentResponse>> adaugaInregistrareAliment(
             @RequestBody InregistrareAlimentRequest request,
-            @AuthenticationPrincipal Utilizator utilizatorCurent) {
+            @AuthenticationPrincipal Utilizator utilizator) {
 
         return ResponseEntity.ok(ApiResponse.<InregistrareAlimentResponse>builder()
                 .status(200)
                 .message("Aliment adăugat cu succes" + request.data())
-                .data(masaService.adaugaInregistrareAliment(request, utilizatorCurent.getId()))
+                .data(masaService.adaugaInregistrareAliment(request, utilizator.getId()))
                 .build()
         );
     }
@@ -55,20 +64,20 @@ public class MasaController {
     @PostMapping("/inregistrare-manuala")
     public ResponseEntity<ApiResponse<InregistrareAlimentResponse>> inregistrareManuala(
             @RequestBody InregistrareManualaRequest request,
-            @AuthenticationPrincipal Utilizator utilizatorCurent) {
+            @AuthenticationPrincipal Utilizator utilizator) {
 
         return ResponseEntity.ok(ApiResponse.<InregistrareAlimentResponse>builder()
                 .status(200)
                 .message("Aliment adăugat manual cu succes la masa" + request.data())
-                .data(masaService.adaugaInregistrareManuala(request, utilizatorCurent.getId()))
+                .data(masaService.adaugaInregistrareManuala(request, utilizator.getId()))
                 .build()
         );
     }
 
     @DeleteMapping("/sterge-inregistrare-aliment/{id}")
-    public ResponseEntity<ApiResponse<Void>> stergeInregistrareAlimentBy(@PathVariable Long id, @AuthenticationPrincipal Utilizator utilizatorCurent) {
+    public ResponseEntity<ApiResponse<Void>> stergeInregistrareAlimentBy(@PathVariable Long id, @AuthenticationPrincipal Utilizator utilizator) {
 
-        masaService.stergeInregistrareAliment(id,  utilizatorCurent.getId());
+        masaService.stergeInregistrareAliment(id,  utilizator.getId());
 
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(200)
@@ -81,12 +90,12 @@ public class MasaController {
     @PatchMapping("/modifica-gramaj-inregistrare-aliment")
     public ResponseEntity<ApiResponse<InregistrareAlimentResponse>> modificaGramajInregistrareAliment(
             @RequestBody ModificareGramajInregistrareAlimentRequest request,
-            @AuthenticationPrincipal Utilizator utilizatorCurent) {
+            @AuthenticationPrincipal Utilizator utilizator) {
 
         return ResponseEntity.ok(ApiResponse.<InregistrareAlimentResponse>builder()
                 .status(200)
                 .message("Gramajul înregistrării alimentului a fost modificat cu succes.")
-                .data(masaService.modificaGramajInregistrareAliment(request, utilizatorCurent.getId()))
+                .data(masaService.modificaGramajInregistrareAliment(request, utilizator.getId()))
                 .build()
         );
     }
@@ -94,20 +103,20 @@ public class MasaController {
     @PatchMapping("/modifica-inregistrare-manuala")
     public ResponseEntity<ApiResponse<InregistrareAlimentResponse>> modificaInregistrareManuala(
             @RequestBody ModificareInregistrareManualaRequest request,
-            @AuthenticationPrincipal Utilizator utilizatorCurent) {
+            @AuthenticationPrincipal Utilizator utilizator) {
 
         return ResponseEntity.ok(ApiResponse.<InregistrareAlimentResponse>builder()
                 .status(200)
                 .message("Înregistrarea a fost modificată cu succes.")
-                .data(masaService.modificaInregistrareManuala(request, utilizatorCurent.getId()))
+                .data(masaService.modificaInregistrareManuala(request, utilizator.getId()))
                 .build()
         );
     }
 
     @GetMapping("/categorie-masa")
-    public ResponseEntity<List<CategorieMasaDto>> getCategoriiMese(@AuthenticationPrincipal Utilizator utilizatorCurent) {
+    public ResponseEntity<List<CategorieMasaDto>> getCategoriiMese(@AuthenticationPrincipal Utilizator utilizator) {
 
-        return ResponseEntity.ok(masaService.getCategoriiMese(utilizatorCurent.getId()));
+        return ResponseEntity.ok(masaService.getCategoriiMese(utilizator.getId()));
     }
 
     @PutMapping("/categorie-masa")
@@ -122,4 +131,5 @@ public class MasaController {
                 .build()
         );
     }
+
 }
