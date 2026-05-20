@@ -119,6 +119,9 @@ async def predict_food(file: UploadFile = File(...)):
         
         # Facem predictia
         predicted_class, top_prob = predict_aliment(model, image_tensor, idx_to_class)
+
+        if top_prob < 0.3:  # Prag de încredere
+            predicted_class = "unknown" 
         
         # Returnam un JSON
         return {

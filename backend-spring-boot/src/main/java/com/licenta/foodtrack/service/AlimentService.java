@@ -10,9 +10,7 @@ import com.licenta.foodtrack.mapper.AlimentMapper;
 import com.licenta.foodtrack.model.Aliment;
 import com.licenta.foodtrack.model.NutritionScore;
 import com.licenta.foodtrack.repository.AlimentRepository;
-import com.licenta.foodtrack.repository.UtilizatorRepository;
 import com.licenta.foodtrack.util.MacroProcentsCalculator;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +64,7 @@ public class AlimentService {
         return alimente.stream().map(alimentMapper::toDto).toList();
     }
 
-    public AlimentDto searchByBarcode(String barcode) {
+    public AlimentDto searchByBarcode(String barcode, UUID idUtilizator) {
         // Se cauta in baza de date. Daca nu se gaseste, se apeleaza API-ul OFF
         // Daca API-ul returneaza un produs valid, se salveaza in baza de date si se returneaza
 
@@ -78,6 +76,12 @@ public class AlimentService {
                         .filter(a -> !alimentRepository.existsByCode(a.getCode()))
                         .map(alimentRepository::save));
 
+        if (aliment.isPresent()) {
+            if(aliment.get().getIsValidated() == false && !aliment.get().getCreatedByUserId().equals(idUtilizator)) {
+                throw new DataNotBelongingToUserException("Alimentul cu codul de bare " + barcode + " nu a fost validat și nu aparține utilizatorului curent.");
+            }
+        }
+
         return alimentMapper.toDto(aliment.orElseThrow(() -> new BarcodeNotFoundException(barcode)));
     }
 
@@ -87,6 +91,10 @@ public class AlimentService {
 
         aliment.setIsValidated(false);
         aliment.setCreatedByUserId(idUtilizatorCurent);
+
+        if(alimentRepository.existsByCode(aliment.getCode())) {
+            throw new IllegalStateException("Un aliment cu codul de bare " + aliment.getCode() + " există deja în baza de date.");
+        }
 
         return alimentMapper.toDto(alimentRepository.save(aliment));
 

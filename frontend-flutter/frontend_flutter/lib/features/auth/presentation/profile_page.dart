@@ -163,7 +163,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
 
           if (_data?.rol == 'ADMIN') ...[
-            const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.of(context).push(
@@ -175,10 +174,15 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
 
+          const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: _logout,
             icon: const Icon(Icons.logout),
             label: const Text('Logout'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFCF0026),
+              foregroundColor: Colors.white,
+            ),
           ),
         ],
       ),

@@ -43,9 +43,9 @@ public class AlimentController
     }
 
     @GetMapping("/search-by-barcode")
-    public ResponseEntity<AlimentDto> searchByBarcode(@RequestParam String barcode) {
+    public ResponseEntity<AlimentDto> searchByBarcode(@RequestParam String barcode, @AuthenticationPrincipal Utilizator utilizator) {
 
-        return ResponseEntity.ok(alimentService.searchByBarcode(barcode));
+        return ResponseEntity.ok(alimentService.searchByBarcode(barcode, utilizator.getId()));
     }
     
     @PostMapping()

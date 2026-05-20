@@ -72,6 +72,19 @@ Cand JWT-ul a expirat, backend-ul intoarce `401 Unauthorized`:
 }
 ```
 
+### Resursa nu gasita (`404 Not Found`)
+Cand o resursa (aliment, masa etc.) nu exista in baza de date, backend-ul intoarce `404 Not Found`:
+
+```json
+{
+  "status": 404,
+  "error": "NOT_FOUND",
+  "message": "Nu s-a putut recunoaște mâncarea din imagine.",
+  "path": "/foodtrack/aliment/99999",
+  "timestamp": "2026-05-05T12:00:00"
+}
+```
+
 ## 3) Valori enum (importante pentru Flutter)
 
 ### `GenUtilizator`
@@ -197,6 +210,47 @@ Example response (`DetaliiAlimentResponse`):
 - Auth: required, ADMIN only
 - Response: `List<AlimentDto>`
 - Descriere: returneaza toate alimentele nevalidate
+
+## FoodRecognitionController
+Base path: `/foodtrack/model`
+
+### `GET /foodtrack/model/predict`
+- Auth: required
+- Request: multipart/form-data cu `file` (imagine JPG/PNG/WEBP)
+- Response: `AlimentDto`
+- Descriere: trimite o imagine (JPG, PNG sau WEBP) catre modelul de AI pentru a recogniza alimentul. Intoarce detaliile alimentului detectat sub forma `AlimentDto`.
+
+Example curl request:
+```bash
+curl -v -X GET \
+  -H "Authorization: Bearer <JWT>" \
+  -F "file=@/path/to/image.jpg" \
+  http://localhost:8083/foodtrack/model/predict
+```
+
+Example response (`AlimentDto`):
+```json
+{
+  "id": 42,
+  "product_name": "Măr roșu",
+  "brands": "Cultivat local",
+  "code": "0000000000000",
+  "is_validated": true,
+  "energy_kcal_100g": 52,
+  "energy_kj_100g": 218,
+  "fat_100g": 0.2,
+  "saturated_fat_100g": 0.0,
+  "carbohydrates_100g": 13.8,
+  "sugars_100g": 10.4,
+  "fiber_100g": 2.4,
+  "protein_100g": 0.3,
+  "salt_100g": 0.0,
+  "nutrition_score": "A",
+  "categorie": "FRUCTE"
+}
+```
+
+Note: Maxim 5MB per imagine. Doar multipart/form-data se acceptă.
 
 ## MasaController
 Base path: `/foodtrack/masa`

@@ -14,6 +14,8 @@ public interface AlimentRepository extends JpaRepository<Aliment, Long> {
 
     Optional<Aliment> findByCode(String barcode);
 
+    Optional<Aliment> findByCodeAndIsValidatedTrueOrCreatedByUserId(String code, UUID userId);
+
     List<Aliment> findByProductNameContainingIgnoreCaseAndIsValidatedTrue(String productName);
 
     List<Aliment> findByProductNameContainingIgnoreCaseAndCreatedByUserIdAndIsValidatedFalse(String productName, UUID userId);

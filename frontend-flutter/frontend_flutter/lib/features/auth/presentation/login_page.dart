@@ -60,6 +60,7 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (_) => const TodayJournalPage()),
       );
     } catch (e) {
+      _passwordController.clear();
       setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {

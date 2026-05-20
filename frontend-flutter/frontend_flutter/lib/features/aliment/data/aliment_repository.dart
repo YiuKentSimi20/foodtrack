@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:frontend_flutter/core/enums/aliment_category.dart';
@@ -328,6 +330,63 @@ class AlimentRepository {
     }
 
     return DetaliiAlimentResponse.fromJson(payload);
+  }
+
+  Future<AlimentDto> searchByBarcode(String barcode) async {
+    try {
+      final resp = await apiClient.dio.get(
+        '/foodtrack/aliment/search-by-barcode',
+        queryParameters: {'barcode': barcode},
+      );
+
+      if(resp.statusCode == 404) {
+        throw Exception('Alimentul cu codul de bare $barcode nu a fost găsit');
+      }
+
+      final data = resp.data;
+      final Map<String, dynamic> payload;
+      if (data is Map && data['data'] is Map) {
+        payload = Map<String, dynamic>.from(data['data']);
+      } else if (data is Map) {
+        payload = Map<String, dynamic>.from(data);
+      } else {
+        throw Exception('Format invalid răspuns search by barcode');
+      }
+
+      return AlimentDto.fromJson(payload);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data?['message'] ?? e.message ?? 'Eroare la căutarea alimentului');
+    }
+  }
+
+  Future<AlimentDto> predictFoodFromImage(File imageFile) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(imageFile.path),
+      });
+
+      final resp = await apiClient.dio.get(
+        '/foodtrack/model/predict',
+        data: formData,
+      );
+
+      final data = resp.data;
+      final Map<String, dynamic> payload;
+      if (data is Map && data['data'] is Map) {
+        payload = Map<String, dynamic>.from(data['data']);
+      } else if (data is Map) {
+        payload = Map<String, dynamic>.from(data);
+      } else {
+        throw Exception('Format invalid raspuns predict');
+      }
+
+      return AlimentDto.fromJson(payload);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        throw Exception('Nu s-a putut recunoaște mâncarea din imagine.');
+      }
+      throw Exception(e.response?.data?['message'] ?? e.message ?? 'Eroare la recunoaștere');
+    }
   }
 
   dynamic _extractDataObject(dynamic data) {

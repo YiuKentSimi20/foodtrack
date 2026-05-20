@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_flutter/features/auth/presentation/widgets/food_item_card.dart';
 import 'package:frontend_flutter/main.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../core/token_storage.dart';
 import '../../../core/api_client.dart';
 import '../../aliment/data/aliment_repository.dart';
 import '../models/aliment_dto.dart';
 import 'aliment_details_page.dart';
+import 'barcode_scanner_page.dart';
 import 'create_aliment_page.dart';
+import 'food_recogntition_page.dart';
 import 'manual_entry_page.dart';
 
 class SearchFoodPage extends StatefulWidget {
@@ -32,6 +35,11 @@ class _SearchFoodPageState extends State<SearchFoodPage> {
 
   AlimentDto? _selectedAliment;
   final _gramsController = TextEditingController(text: '100');
+
+  final MobileScannerController controller = MobileScannerController(
+    detectionTimeoutMs: 15000,
+    torchEnabled: true,
+  );
 
   double _previewCalories = 0;
   double _previewProtein = 0;
@@ -239,7 +247,6 @@ class _SearchFoodPageState extends State<SearchFoodPage> {
               child: ListTile(
                 leading: const Icon(Icons.add_circle_outline),
                 title: const Text('Crează aliment nou'),
-                subtitle: const Text('Definiți un aliment personalizat'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () async {
                   final createdAliment = await Navigator.of(context).push<AlimentDto>(
@@ -259,12 +266,10 @@ class _SearchFoodPageState extends State<SearchFoodPage> {
                 },
               ),
             ),
-            const SizedBox(height: 12),
             Card(
               child: ListTile(
                 leading: const Icon(Icons.edit_note),
-                title: const Text('Adaugă înregistrare manuală'),
-                subtitle: const Text('Introdu manual caloriile și macronutrienții'),
+                title: const Text('Introdu manual caloriile'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () async {
                   final added = await Navigator.of(context).push<bool>(
@@ -279,6 +284,71 @@ class _SearchFoodPageState extends State<SearchFoodPage> {
 
                   if (added == true && mounted) {
                     Navigator.of(context).pop(true);
+                  }
+                },
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.qr_code_scanner),
+                title: const Text('Scanează cod de bare'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  final scannedCode = await Navigator.of(context).push<String>(
+                      MaterialPageRoute(builder: (_) => const BarcodeScannerPage())
+                  );
+
+                  if (scannedCode != null && scannedCode.isNotEmpty) {
+                    setState(() {
+                      _loading = true;
+                      _error = null;
+                      _results = [];
+                    });
+                    try {
+                      final aliment = await _repo.searchByBarcode(scannedCode);
+                      setState(() => _results = [aliment]); // înlocuiește lista cu rezultatul
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Aliment gasit pentru codul de bare: $scannedCode"')),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Nu s-a găsit aliment cu codul: $scannedCode'),
+                          duration: const Duration(seconds: 5),
+                          action: SnackBarAction(
+                            label: 'Creează aliment',
+                            onPressed: () async {
+                              final created = await Navigator.of(context).push<AlimentDto>(
+                                MaterialPageRoute(
+                                  builder: (_) => CreateAlimentPage(initialBarcode: scannedCode),
+                                ),
+                              );
+                              if (created != null && mounted) {
+                                _onSelectAliment(created);
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    } finally {
+                      setState(() => _loading = false);
+                    }
+                  }
+                },
+              ),
+            ),
+
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.image_search_outlined),
+                title: const Text('Recunoaștere din poză'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  final aliment = await Navigator.of(context).push<AlimentDto>(
+                    MaterialPageRoute(builder: (_) => const FoodRecognitionPage()),
+                  );
+                  if (aliment != null && mounted) {
+                    setState(() => _results = [aliment]);
                   }
                 },
               ),

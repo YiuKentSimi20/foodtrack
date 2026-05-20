@@ -284,13 +284,6 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
         ],
       )
           : _buildContent(accent),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: accent,
-        onPressed: () {
-          // TODO: navigare către adăugare înregistrare
-        },
-        child: const Icon(Icons.add),
-      ),
     );
   }
 

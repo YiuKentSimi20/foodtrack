@@ -182,4 +182,16 @@ public class ValidationExceptionHandler {
                         .build()
         );
     }
+
+    @ExceptionHandler(PredictionNotSureException.class)
+    public ResponseEntity<ApiErrorResponse> handlePredictionNotSure(PredictionNotSureException ex) {
+
+        return status(HttpStatus.NOT_FOUND).body(
+                ApiErrorResponse.builder()
+                        .status(404)
+                        .error("NOT_FOUND")
+                        .message(ex.getMessage())
+                        .build()
+        );
+    }
 }

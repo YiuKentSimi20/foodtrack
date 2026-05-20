@@ -60,6 +60,9 @@ public class Utilizator implements UserDetails {
     @OneToMany(mappedBy = "utilizator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Masa> listaMese;
 
+    @OneToMany(mappedBy = "utilizator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InregistrareActivitateFizica> activitatiFizice;
+
     @PrePersist
     public void prePersist() {
         if(this.role == null) {
@@ -147,6 +150,74 @@ public class Utilizator implements UserDetails {
         return Optional.of(this.masuratoriGrasimeCorporala.isEmpty() ?
                 0.0 : this.masuratoriGrasimeCorporala.getLast().getGrasimeCorporalaProcent());
     }
+
+    public Optional<Double> getMasuratoareGreutateFor(LocalDate date) {
+
+        List<MasuratoareGreutate> masuratoriInainteDeData =
+                masuratoriGreutate.stream()
+                        .filter(masuratoare -> masuratoare.getDate().isBefore(date) || masuratoare.getDate().isEqual(date))
+                        .toList();
+
+        if(masuratoriInainteDeData.isEmpty()) {
+            List<MasuratoareGreutate> masuratoriDupaData =
+                    masuratoriGreutate.stream()
+                            .filter(masuratoare -> masuratoare.getDate().isAfter(date))
+                            .toList();
+            if(masuratoriDupaData.isEmpty()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(masuratoriDupaData.getFirst().getGreutateKg());
+
+        }
+
+        return Optional.of(masuratoriInainteDeData.getLast().getGreutateKg());
+    }
+
+    public Optional<Double> getMasuratoareInaltimeFor(LocalDate date) {
+
+        List<MasuratoareInaltime> masuratoriInainteDeData =
+                masuratoriInaltime.stream()
+                        .filter(masuratoare -> masuratoare.getDate().isBefore(date) || masuratoare.getDate().isEqual(date))
+                        .toList();
+
+        if(masuratoriInainteDeData.isEmpty()) {
+            List<MasuratoareInaltime> masuratoriDupaData =
+                    masuratoriInaltime.stream()
+                            .filter(masuratoare -> masuratoare.getDate().isAfter(date))
+                            .toList();
+            if(masuratoriDupaData.isEmpty()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(masuratoriDupaData.getFirst().getInaltimeCm());
+        }
+
+        return Optional.of(masuratoriInainteDeData.getLast().getInaltimeCm());
+    }
+
+    public Optional<Double> getMasuratoareGrasimeCorporalaFor(LocalDate date) {
+
+        List<MasuratoareGrasimeCorporala> masuratoriInainteDeData =
+                masuratoriGrasimeCorporala.stream()
+                        .filter(masuratoare -> masuratoare.getDate().isBefore(date) || masuratoare.getDate().isEqual(date))
+                        .toList();
+
+        if(masuratoriInainteDeData.isEmpty()) {
+            List<MasuratoareGrasimeCorporala> masuratoriInaltimeDupaData =
+                    masuratoriGrasimeCorporala.stream()
+                            .filter(masuratoare -> masuratoare.getDate().isAfter(date))
+                            .toList();
+            if(masuratoriInaltimeDupaData.isEmpty()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(masuratoriInaltimeDupaData.getFirst().getGrasimeCorporalaProcent());
+        }
+
+        return Optional.of(masuratoriInainteDeData.getLast().getGrasimeCorporalaProcent());
+    }
+
 
     public Optional<Obiectiv> getObiectivFor(LocalDate date) {
 

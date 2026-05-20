@@ -4,9 +4,15 @@ import '../../../core/enums/aliment_category.dart';
 import '../../../core/token_storage.dart';
 import '../../aliment/data/aliment_repository.dart';
 import '../models/aliment_dto.dart';
+import 'barcode_scanner_page.dart';
 
 class CreateAlimentPage extends StatefulWidget {
-  const CreateAlimentPage({super.key});
+  final String? initialBarcode;
+
+  const CreateAlimentPage({
+    this.initialBarcode,
+    super.key
+  });
 
   @override
   State<CreateAlimentPage> createState() => _CreateAlimentPageState();
@@ -21,7 +27,7 @@ class _CreateAlimentPageState extends State<CreateAlimentPage> {
 
   final _productName = TextEditingController();
   final _brands = TextEditingController();
-  final _code = TextEditingController();
+  late final _code = TextEditingController(text: widget.initialBarcode ?? '');
   final _kcal = TextEditingController();
   final _protein = TextEditingController();
   final _carbs = TextEditingController();
@@ -60,6 +66,21 @@ class _CreateAlimentPageState extends State<CreateAlimentPage> {
 
     final kcal = (p * 4) + (c * 4) + (f * 9);
     _kcal.text = kcal.toStringAsFixed(1);
+  }
+
+  Future<void> _scanBarcode() async {
+    final scannedCode = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const BarcodeScannerPage()),
+    );
+
+    if (scannedCode != null && scannedCode.isNotEmpty) {
+      setState(() {
+        _code.text = scannedCode;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Cod scanat: $scannedCode')),
+      );
+    }
   }
 
   Future<void> _save() async {
@@ -151,11 +172,51 @@ class _CreateAlimentPageState extends State<CreateAlimentPage> {
             ),
             const SizedBox(height: 12),
 
-            TextFormField(
-              controller: _code,
+            // Non-editable barcode field with scan button
+            InputDecorator(
               decoration: const InputDecoration(
-                labelText: 'Cod barcode (opțional)',
+                labelText: 'Cod de bare',
                 border: OutlineInputBorder(),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        // Do nothing or optionally show a tooltip that field is read-only
+                      },
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          controller: _code,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            isDense: true,
+                            border: InputBorder.none,
+                            hintText: 'Apasă pentru a scana',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    tooltip: 'Scanează cod de bare',
+                    icon: const Icon(Icons.qr_code_scanner),
+                    onPressed: _loading ? null : _scanBarcode,
+                  ),
+                  // optional: clear button
+                  IconButton(
+                    tooltip: 'Șterge cod',
+                    icon: const Icon(Icons.clear),
+                    onPressed: _loading
+                        ? null
+                        : () {
+                      setState(() {
+                        _code.text = '';
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 12),
