@@ -27,6 +27,7 @@ public class InregistrareActivitateFizica {
     private Double durataMin;
     private Double caloriiArse;
     private Integer numarPasi;
+    private Double utilizatorKg;
     @Enumerated(EnumType.STRING)
     private SursaDate sursaDate;
     private String notite;

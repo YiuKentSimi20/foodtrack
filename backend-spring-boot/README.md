@@ -108,6 +108,9 @@ Cand o resursa (aliment, masa etc.) nu exista in baza de date, backend-ul intoar
 - `MANUAL`
 - `CATALOG`
 
+### `CategorieActivitate`
+- `CARDIO`, `FORTA`, `FLEXIBILITATE`, `SPORT_DE_ECHIPA`, `ACTIVITATI_ZILNICE`
+
 ## 4) Endpointuri pe controllere
 
 ## AuthenticationController
@@ -309,6 +312,293 @@ Base path: `/foodtrack/masa`
 - Auth: required
 - Request: `UpdateCategoriiMeseRequest`
 - Response: `ApiResponse<List<CategorieMasaDto>>`
+
+## ActivitateFizicaController
+Base path: `/foodtrack/activitate-fizica`
+
+### `GET /foodtrack/activitate-fizica`
+- Auth: required
+- Response: `List<ActivitateFizicaDto>`
+- Descriere: obtine lista tuturor inregistrarilor de activitate fizica ale utilizatorului curent.
+
+Example success response:
+```json
+[
+  {
+    "id": 123,
+    "nume": "Plimbare rapida",
+    "met": 3.5,
+    "categorie": "CARDIO"
+  },
+  {
+    "id": 124,
+    "nume": "Alergare",
+    "met": 10.0,
+    "categorie": "SPORT_DE_ECHIPA"
+  }
+]
+```
+
+Possible error responses (GET):
+
+- Unauthorized (401) / Token expired
+
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "Full authentication is required to access this resource",
+  "timestamp": "2026-05-20T12:00:00"
+}
+```
+
+---
+
+### `POST /foodtrack/activitate-fizica`
+- Auth: required
+- Request: `InregistrareActivitateFizicaRequest`
+- Response: `ApiResponse<InregistrareActivitateFizicaResponse>`
+- Descriere: adauga o inregistrare de activitate fizica manual (durata in minute, data, notite). Calculeaza calorii arse pe baza MET si durata.
+
+Example request (`InregistrareActivitateFizicaRequest`):
+```json
+{
+  "id": 1,
+  "data_activitate": "2026-05-19",
+  "durata_min": 45.0,
+  "notite": "Plimbare rapida in parc"
+}
+```
+
+Example success response (`ApiResponse<InregistrareActivitateFizicaResponse>`):
+```json
+{
+  "status": 200,
+  "message": "Activitate fizică adăugată cu succes",
+  "data": {
+    "id": 123,
+    "nume": "Plimbare rapida",
+    "data_activitate": "2026-05-19",
+    "met": 3.5,
+    "durata_min": 45.0,
+    "calorii_arse": 180.0,
+    "numar_pasi": 5600,
+    "categorie": "ALTELE",
+    "sursa_date": "MANUAL",
+    "notite": "Plimbare rapida in parc"
+  }
+}
+```
+
+Possible error responses (POST):
+
+- Validation failed (400 Bad Request): missing/invalid fields
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "path": "/foodtrack/activitate-fizica",
+  "timestamp": "2026-05-20T12:00:00",
+  "fieldErrors": [
+    { "field": "durata_min", "rejectedValue": -5, "message": "must be positive" },
+    { "field": "data_activitate", "rejectedValue": "2026-50-01", "message": "must be a valid date in yyyy-MM-dd" }
+  ]
+}
+```
+
+- Unauthorized (401) / Token expired
+
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "Full authentication is required to access this resource",
+  "timestamp": "2026-05-20T12:00:00"
+}
+```
+
+---
+
+### `PATCH /foodtrack/activitate-fizica`
+- Auth: required
+- Request: `ModificaInregistrareActivitateFizicaRequest`
+- Response: `ApiResponse<InregistrareActivitateFizicaResponse>`
+- Descriere: modifica durata sau notitele unei inregistrari existente (id obligatoriu).
+
+Example request (`ModificaInregistrareActivitateFizicaRequest`):
+```json
+{
+  "id": 123,
+  "durata_min": 60.0,
+  "notite": "Actualizat: alergare usoara"
+}
+```
+
+Example success response:
+```json
+{
+  "status": 200,
+  "message": "Activitate fizică modificată cu succes",
+  "data": {
+    "id": 123,
+    "nume": "Plimbare rapida",
+    "data_activitate": "2026-05-19",
+    "met": 3.5,
+    "durata_min": 60.0,
+    "calorii_arse": 240.0,
+    "numar_pasi": 7200,
+    "categorie": "ALTELE",
+    "sursa_date": "MANUAL",
+    "notite": "Actualizat: alergare usoara"
+  }
+}
+```
+
+Possible error responses (PATCH):
+
+- Validation failed (400 Bad Request)
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "path": "/foodtrack/activitate-fizica",
+  "timestamp": "2026-05-20T12:00:00",
+  "fieldErrors": [ { "field": "id", "rejectedValue": null, "message": "must not be null" } ]
+}
+```
+
+- Not found (404) if the record does not exist
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "Activitate fizica with id=123 not found",
+  "path": "/foodtrack/activitate-fizica",
+  "timestamp": "2026-05-20T12:00:00"
+}
+```
+
+- Forbidden (403) if the record exists but does not belong to the authenticated user
+
+```json
+{
+  "status": 403,
+  "error": "Forbidden",
+  "message": "Resource does not belong to the current user",
+  "path": "/foodtrack/activitate-fizica",
+  "timestamp": "2026-05-20T12:00:00"
+}
+```
+
+---
+
+### `DELETE /foodtrack/activitate-fizica/{id}`
+- Auth: required
+- Path: `id` (Long)
+- Response: `ApiResponse<Void>`
+- Descriere: sterge o inregistrare de activitate a utilizatorului autentificat.
+
+Example success response:
+```json
+{
+  "status": 200,
+  "message": "Activitate fizică ștearsă cu succes"
+}
+```
+
+Possible error responses (DELETE):
+
+- Not found (404) when id does not exist
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "Activitate fizica with id=999 not found",
+  "path": "/foodtrack/activitate-fizica/999",
+  "timestamp": "2026-05-20T12:00:00"
+}
+```
+
+- Forbidden (403) if the record belongs to another user
+
+```json
+{
+  "status": 403,
+  "error": "Forbidden",
+  "message": "You are not allowed to delete this record",
+  "path": "/foodtrack/activitate-fizica/999",
+  "timestamp": "2026-05-20T12:00:00"
+}
+```
+
+### `POST /foodtrack/activitate-fizica/health-connect`
+- Auth: required
+- Request: `HealthConnectRequest` (folosit pentru import din Health Connect / Google Fit / Apple Health)
+- Response: `ApiResponse<InregistrareActivitateFizicaResponse>`
+- Descriere: primeste datele importate din Health Connect (numar pasi, calorii arse, data) si creeaza o inregistrare.
+
+Example request (`HealthConnectRequest`):
+```json
+{
+  "data_activitate": "2026-05-19",
+  "numar_pasi": 8000,
+  "calorii_arse": 320.0
+}
+```
+
+Example success response:
+```json
+{
+  "status": 200,
+  "message": "Activitate fizică adăugată cu succes din Health Connect",
+  "data": {
+    "id": 124,
+    "nume": "Plimbare",
+    "data_activitate": "2026-05-19",
+    "met": 3.5,
+    "durata_min": 45.0,
+    "calorii_arse": 320.0,
+    "numar_pasi": 8000,
+    "categorie": "PLIMBARE",
+    "sursa_date": "HEALTH_CONNECT",
+    "notite": null
+  }
+}
+```
+
+Possible error responses (health-connect):
+
+- Validation failed (400) if required fields are missing or invalid
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Missing required fields",
+  "path": "/foodtrack/activitate-fizica/health-connect",
+  "timestamp": "2026-05-20T12:00:00",
+  "fieldErrors": [ { "field": "numar_pasi", "rejectedValue": null, "message": "must not be null" } ]
+}
+```
+
+- Unauthorized (401) if token missing/invalid
+
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "Full authentication is required to access this resource",
+  "timestamp": "2026-05-20T12:00:00"
+}
+```
+
+Note: `data_activitate` foloseste formatul `yyyy-MM-dd`. Toate endpointurile necesita autentificare (JWT).
 
 ## MasuratoareController
 Base path: `/foodtrack/masuratoare`
@@ -553,6 +843,7 @@ Notă: `nume_masa` este cheia JSON, dar reprezintă `categorieMasaId` (Long) în
 {
   "data": "2026-05-02",
   "mese": [],
+  "activitati_fizice": [],
   "obiectiv_calorii": 2200.0,
   "obiectiv_proteine": 150.0,
   "obiectiv_carbohidrati": 250.0,
@@ -569,6 +860,7 @@ Notă: `nume_masa` este cheia JSON, dar reprezintă `categorieMasaId` (Long) în
   "proteine_total": 95.0,
   "protein_percent": 21.0,
   "salt_total": 4.5,
+  "calorii_arse": 300.0,
   "calorii_nete": 400.0
 }
 ```
@@ -584,6 +876,34 @@ Observație: JSON-ul conține atât `carbohidrati_total` (română) cât și `ca
   "nume": "Mic Dejun",
   "numar_ordine": 1,
   "is_active": true
+}
+```
+
+`ActivitateFizicaDto` (proprietăți JSON exacte)
+```json
+{
+  "id": 123,
+  "nume": "Plimbare rapida",
+  "met": 4.2,
+  "categorie": "CARDIO"
+}
+```
+
+`InregistrareActivitateFizicaResponse` (proprietăți JSON exacte)
+```json
+{
+  "id": 123,
+  "nume": "Plimbare rapida",
+  "data_activitate": "2026-05-19",
+  "met": 3.5,
+  "durata_min": 60.0,
+  "calorii_arse": 240.0,
+  "numar_pasi": 7200,
+  "utilizator_kg": 75.0,
+  "categorie": "ALTELE",
+  "sursa_date": "MANUAL",
+  "notite": "Actualizat: alergare usoara"
+
 }
 ```
 

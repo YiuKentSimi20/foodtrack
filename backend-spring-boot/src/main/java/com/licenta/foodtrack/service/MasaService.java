@@ -3,10 +3,7 @@ package com.licenta.foodtrack.service;
 
 import com.licenta.foodtrack.dto.*;
 import com.licenta.foodtrack.exception.DataNotBelongingToUserException;
-import com.licenta.foodtrack.mapper.AlimentMapper;
-import com.licenta.foodtrack.mapper.CategorieMasaMapper;
-import com.licenta.foodtrack.mapper.InregistrareAlimentMapper;
-import com.licenta.foodtrack.mapper.MasaMapper;
+import com.licenta.foodtrack.mapper.*;
 import com.licenta.foodtrack.model.*;
 import com.licenta.foodtrack.repository.*;
 import com.licenta.foodtrack.util.MacroProcentsCalculator;
@@ -29,7 +26,7 @@ public class MasaService {
     private final MasaMapper masaMapper;
     private final CategorieMasaRepository categorieMasaRepository;
     private final CategorieMasaMapper categorieMasaMapper;
-    private final AlimentMapper alimentMapper;
+    private final InregistrareActivitateFizicaMapper inregistrareActivitateFizicaMapper;
 
     public MasaResponse getMasaById(Long id, UUID idUtiizator) {
 
@@ -141,7 +138,6 @@ public class MasaService {
 
         mesePeZile.forEach((date, masa) -> {
             Obiectiv obiectiv = utilizator.getObiectivFor(date).orElseThrow(() -> new IllegalStateException("Nu exista obiective setate"));
-            Double caloriiNete = utilizator.calculateTdee() - masa.stream().map(Masa::getTotalEnergyKcal).mapToDouble(Double::doubleValue).sum();
 
             Double totalGrams = masa.stream().map(Masa::calculateTotalGrams).mapToDouble(Double::doubleValue).sum();
             Double totalEnergyKcal = masa.stream().map(Masa::getTotalEnergyKcal).mapToDouble(Double::doubleValue).sum();
@@ -153,6 +149,19 @@ public class MasaService {
             Double totalFiber = masa.stream().map(Masa::getTotalFiber).mapToDouble(Double::doubleValue).sum();
             Double totalProtein = masa.stream().map(Masa::getTotalProtein).mapToDouble(Double::doubleValue).sum();
             Double totalSalt = masa.stream().map(Masa::getTotalSalt).mapToDouble(Double::doubleValue).sum();
+
+            Double caloriiArse = utilizator.getActivitatiFizice().stream()
+                    .filter(a -> a.getDataActivitate().equals(date))
+                    .map(InregistrareActivitateFizica::getCaloriiArse)
+                    .mapToDouble(Double::doubleValue).sum();
+
+            Double caloriiNete = utilizator.calculateBmr() + caloriiArse - totalEnergyKcal;
+
+            if(utilizator.getActivitatiFizice().stream()
+                    .filter(a -> a.getDataActivitate().equals(date))
+                    .toList().isEmpty()) {
+                caloriiNete = utilizator.calculateTdee() - totalEnergyKcal;
+            }
 
             MacroProcentsCalculator.MacroPercents macroPercents = MacroProcentsCalculator.calcPercentsSumOne(
                     totalFat, totalCarbohydrates, totalProtein
@@ -171,6 +180,12 @@ public class MasaService {
                             masa.stream()
                                     .map(masaMapper::toResponse)
                                     .toList(),
+
+                            utilizator.getActivitatiFizice().stream()
+                                    .filter(a -> a.getDataActivitate().equals(date))
+                                    .map(inregistrareActivitateFizicaMapper::toResponse)
+                                    .toList(),
+
                             obiectiv.getCalories(),
                             obiectiv.getProtein(),
                             obiectivMacroProcents.proteinPercent(),
@@ -191,8 +206,8 @@ public class MasaService {
                             totalProtein,
                             macroPercents.proteinPercent(),
                             totalSalt,
+                            caloriiArse,
                             caloriiNete
-                            //TODO: De facut mai eficient
                     )
             );
         });

@@ -26,6 +26,9 @@ public record InregistrareActivitateFizicaResponse(
         @JsonProperty("numar_pasi")
         Integer numarPasi,
 
+        @JsonProperty("utilizator_kg")
+        Double utilizatorKg,
+
         CategorieActivitate categorie,
 
         @JsonProperty("sursa_date")

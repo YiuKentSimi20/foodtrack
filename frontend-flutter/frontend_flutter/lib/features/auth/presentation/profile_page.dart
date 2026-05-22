@@ -6,6 +6,7 @@ import '../data/profile_repository.dart';
 import '../models/date_personale_response.dart';
 import 'admin/admin_validate_aliments_page.dart';
 import 'edit_personal_data_page.dart';
+import 'health_connect_settings_page.dart';
 import 'login_page.dart';
 import '../../../main.dart';
 import 'manage_categories_page.dart';
@@ -174,6 +175,16 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
 
+
+          ElevatedButton.icon(
+            onPressed: ()  {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const HealthConnectSettingsPage(),
+              ));
+            },
+            icon: const Icon(Icons.health_and_safety_outlined),
+            label: const Text('Health Connect'),
+          ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: _logout,

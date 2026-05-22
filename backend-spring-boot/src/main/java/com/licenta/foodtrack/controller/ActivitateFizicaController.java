@@ -10,12 +10,21 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/foodtrack/activitate-fizica")
 @RequiredArgsConstructor
 public class ActivitateFizicaController {
 
     final private ActivitateFizicaService activitateFizicaService;
+
+    @GetMapping()
+    public ResponseEntity<List<ActivitateFizicaDto>> getActivitatiFizice(
+            @AuthenticationPrincipal Utilizator utilizator) {
+
+        return ResponseEntity.ok(activitateFizicaService.getActivitatiFizice(utilizator.getId()));
+    }
 
     @PostMapping()
     public ResponseEntity<ApiResponse<InregistrareActivitateFizicaResponse>> adaugaInregistrareActivitateFizica(
@@ -24,6 +33,7 @@ public class ActivitateFizicaController {
 
         return ResponseEntity.ok(ApiResponse.<InregistrareActivitateFizicaResponse>builder()
                 .status(200)
+
                 .message("Activitate fizică adăugată cu succes")
                 .data(activitateFizicaService.adaugaInregistrareActivitateFizica(request, utilizator.getId()))
                 .build());
@@ -55,12 +65,12 @@ public class ActivitateFizicaController {
     }
 
     @PostMapping("/health-connect")
-    public ResponseEntity<ApiResponse<InregistrareActivitateFizicaResponse>> adaugaInregistrareHealthConnect(
-            @Valid @RequestBody HealthConnectRequest request,
+    public ResponseEntity<ApiResponse<List<InregistrareActivitateFizicaResponse>>> adaugaInregistrareHealthConnect(
+            @Valid @RequestBody List<HealthConnectRequest> request,
             @AuthenticationPrincipal Utilizator utilizator
             ) {
 
-        return ResponseEntity.ok(ApiResponse.<InregistrareActivitateFizicaResponse>builder()
+        return ResponseEntity.ok(ApiResponse.<List<InregistrareActivitateFizicaResponse>>builder()
                 .status(200)
                 .message("Activitate fizică adăugată cu succes din Health Connect")
                 .data(activitateFizicaService.adaugaInregistrareHealthConnect(request, utilizator.getId()))

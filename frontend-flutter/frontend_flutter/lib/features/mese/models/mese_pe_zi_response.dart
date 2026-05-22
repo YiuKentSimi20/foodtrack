@@ -1,8 +1,10 @@
+import '../../activitate/models/inregistrare_activitate_fizica_response.dart';
 import 'masa_response.dart';
 
 class MesePeZiResponse {
   final String data; // yyyy-MM-dd
   final List<MasaResponse> mese;
+  final List<InregistrareActivitateFizicaResponse> activitatiFizice;
   final double? obiectivCaloriiZi;
   final double? obiectivProteineZi;
   final double? obiectivCarbohidratiZi;
@@ -12,10 +14,12 @@ class MesePeZiResponse {
   final double? totalCarbohidratiZi;
   final double? totalGrasimiZi;
   final double? caloriiNete;
+  final double? caloriiArse;
 
   MesePeZiResponse({
     required this.data,
     required this.mese,
+    required this.activitatiFizice,
     this.obiectivCaloriiZi,
     this.obiectivProteineZi,
     this.obiectivCarbohidratiZi,
@@ -25,6 +29,7 @@ class MesePeZiResponse {
     this.totalCarbohidratiZi,
     this.totalGrasimiZi,
     this.caloriiNete,
+    this.caloriiArse
   });
 
   factory MesePeZiResponse.fromJson(Map<String, dynamic> json) {
@@ -33,10 +38,15 @@ class MesePeZiResponse {
 
     final meseJson = (json['mese'] as List<dynamic>?) ?? [];
 
+    final activitatiJson = (json['activitati_fizice'] as List<dynamic>?) ?? [];
+
     return MesePeZiResponse(
       data: json['data'] as String? ?? '',
       mese: meseJson
           .map((e) => MasaResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      activitatiFizice: activitatiJson
+          .map((e) => InregistrareActivitateFizicaResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
       obiectivCaloriiZi: parseNum(json['obiectiv_calorii'])?.toDouble(),
       obiectivProteineZi: parseNum(json['obiectiv_proteine'])?.toDouble(),
@@ -47,6 +57,7 @@ class MesePeZiResponse {
       totalCarbohidratiZi: parseNum(json['carbohidrati_total'])?.toDouble(),
       totalGrasimiZi: parseNum(json['fat_total'])?.toDouble(),
       caloriiNete: parseNum(json['calorii_nete'])?.toDouble(),
+      caloriiArse: parseNum(json['calorii_arse'])?.toDouble(),
     );
   }
 }

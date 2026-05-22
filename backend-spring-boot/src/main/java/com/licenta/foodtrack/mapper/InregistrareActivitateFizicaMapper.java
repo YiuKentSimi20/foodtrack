@@ -35,6 +35,7 @@ public class InregistrareActivitateFizicaMapper {
                 inregistrareActivitateFizica.getDurataMin(),
                 inregistrareActivitateFizica.getCaloriiArse(),
                 inregistrareActivitateFizica.getNumarPasi(),
+                inregistrareActivitateFizica.getUtilizatorKg(),
                 inregistrareActivitateFizica.getCategorie(),
                 inregistrareActivitateFizica.getSursaDate(),
                 inregistrareActivitateFizica.getNotite()
