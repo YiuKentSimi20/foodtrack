@@ -30,4 +30,25 @@ class DateFormater {
 
     return '$weekday, ${date.day} $month';
   }
+
+  static String formatMonthAndYear
+      (DateTime date) {
+    const monthNames = [
+      'Ianuarie',
+      'Februarie',
+      'Martie',
+      'Aprilie',
+      'Mai',
+      'Iunie',
+      'Iulie',
+      'August',
+      'Septembrie',
+      'Octombrie',
+      'Noiembrie',
+      'Decembrie',
+    ];
+
+    final month = monthNames[date.month - 1];
+    return '$month ${date.year}';
+  }
 }

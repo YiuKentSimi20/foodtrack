@@ -1,8 +1,10 @@
+import 'package:frontend_flutter/features/activitate/models/categorie_activitate.dart';
+
 class ActivitateFizicaDto {
   final int? id;
   final String? nume;
   final double? met;
-  final String? categorie;
+  final CategorieActivitate? categorie;
 
   ActivitateFizicaDto({
     this.id,
@@ -28,7 +30,9 @@ class ActivitateFizicaDto {
       id: _toInt(json['id']),
       nume: json['nume'] as String?,
       met: _toDouble(json['met']),
-      categorie: json['categorie'] as String?,
+      categorie: json['categorie'] != null
+          ? CategorieActivitate.fromCode(json['categorie'].toString())
+          : null,
     );
   }
 }

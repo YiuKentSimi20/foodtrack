@@ -56,7 +56,9 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
     _weekScrollController = ScrollController();
     final tokenStorage = TokenStorage();
     _masaRepository = MasaRepository(apiClient: ApiClient(tokenStorage));
-    _activitateRepository = ActivitateRepository(apiClient: ApiClient(tokenStorage));
+    _activitateRepository = ActivitateRepository(
+      apiClient: ApiClient(tokenStorage),
+    );
     _healthConnectService = HealthConnectService();
     _initWeek();
 
@@ -94,8 +96,6 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
   String _formatDate(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
-
-
   Future<void> _syncHealthConnect() async {
     setState(() {
       _syncing = true;
@@ -105,7 +105,6 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
     try {
       List<Map<String, dynamic>> healthData = await _healthConnectService
           .syncHistoricalData(daysBack: 30);
-
 
       await _activitateRepository.syncHealthData(healthData: healthData);
 
@@ -141,16 +140,21 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
     final types = [HealthDataType.STEPS, HealthDataType.ACTIVE_ENERGY_BURNED];
     final permissions = [HealthDataAccess.READ, HealthDataAccess.READ];
 
-    final requested = await health.requestAuthorization(types, permissions: permissions);
+    final requested = await health.requestAuthorization(
+      types,
+      permissions: permissions,
+    );
 
     if (!requested && mounted) {
-      setState(() => _error = 'Permisiuni refuzate. Health Connect nu va funcționa.');
+      setState(
+        () => _error = 'Permisiuni refuzate. Health Connect nu va funcționa.',
+      );
       await _prefs.setBool('health_connect_enabled', false);
       setState(() => _healthEnabled = false);
     }
   }
 
-  Future<void> _loadRaport() async {
+  Future<void> _loadRaport({DateTime? keepDay}) async {
     setState(() {
       _loading = true;
       _error = null;
@@ -323,10 +327,6 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
         .where((a) => a.sursaDate == 'HEALTH_CONNECT')
         .toList();
 
-    final manualActivities = activitati
-        .where((a) => a.sursaDate == 'MANUAL')
-        .toList();
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -344,61 +344,68 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
               ],
             ),
             const SizedBox(height: 8),
-            // Column(
-            //   children:
 
-            !_prefs.getBool('health_connect_enabled')! ? SizedBox.shrink() :
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Image(
-                image: AssetImage('assets/icons/health_connect_logo.png'),
-                width: 40,
-                height: 40,
-              ),
-              title: Text(
-                'Health Connect',
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              trailing: ElevatedButton.icon(
-                icon: const Icon(Icons.sync),
-                label: const Text('Sync'),
-                onPressed: () async {
-                  await _syncHealthConnect();
-                },
-              ),
-              subtitle: Column(
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.directions_walk, color: Colors.blueAccent),
-                      const SizedBox(width: 4),
-                      Text(
-                        healthConnectActivities.isEmpty
-                            ? 'Pași: -'
-                            : healthConnectActivities.first.numarPasi != null
-                            ? 'Pași: ${healthConnectActivities.first.numarPasi}'
-                            : 'Pași: -',
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ],
+            !_prefs.getBool('health_connect_enabled')!
+                ? SizedBox.shrink()
+                : ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Image(
+                      image: AssetImage('assets/icons/health_connect_logo.png'),
+                      width: 40,
+                      height: 40,
+                    ),
+                    title: Text(
+                      'Health Connect',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    trailing: ElevatedButton.icon(
+                      icon: const Icon(Icons.sync),
+                      label: const Text('Sync'),
+                      onPressed: () async {
+                        await _syncHealthConnect();
+                      },
+                    ),
+                    subtitle: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.directions_walk,
+                              color: Colors.blueAccent,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              healthConnectActivities.isEmpty
+                                  ? 'Pași: -'
+                                  : healthConnectActivities.first.numarPasi !=
+                                        null
+                                  ? 'Pași: ${healthConnectActivities.first.numarPasi}'
+                                  : 'Pași: -',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.local_fire_department,
+                              color: Colors.orange,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              healthConnectActivities.isEmpty
+                                  ? 'Calorii: -'
+                                  : healthConnectActivities.first.caloriiArse !=
+                                        null
+                                  ? 'Calorii: ${healthConnectActivities.first.caloriiArse?.toStringAsFixed(0)} kcal'
+                                  : 'Calorii: -',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Icon(Icons.local_fire_department, color: Colors.orange),
-                      const SizedBox(width: 4),
-                      Text(
-                        healthConnectActivities.isEmpty
-                            ? 'Calorii: -'
-                            : healthConnectActivities.first.caloriiArse != null
-                            ? 'Calorii: ${healthConnectActivities.first.caloriiArse?.toStringAsFixed(0)} kcal'
-                            : 'Calorii: -',
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
 
             const Divider(),
             const SizedBox(height: 12),
@@ -408,7 +415,7 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
                     return a.sursaDate == 'MANUAL';
                   })
                   .map((a) {
-                    final title = a.nume ?? a.categorie ?? 'Activitate';
+                    final title = a.nume ?? a.categorie?.label ?? 'Activitate';
                     final duration = a.durataMin != null
                         ? '${a.durataMin!.toStringAsFixed(0)} min'
                         : null;
@@ -423,14 +430,10 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
 
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.blue.shade50,
-                        child: const Icon(
-                          Icons.directions_run,
-                          color: Colors.blue,
-                        ),
-                      ),
+                      // leading: const Icon(
+                      //     Icons.horizontal_rule,
+                      //     color: Colors.blue,
+                      //   ),
                       title: Text(
                         title,
                         style: const TextStyle(fontWeight: FontWeight.w600),
@@ -487,7 +490,7 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
     final accent = Theme.of(context).colorScheme.secondary;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Jurnal - Săptămâna'),
+        title: Text('Jurnal - ${DateFormater.formatNiceDate(_selectedDay)}'),
         backgroundColor: accent,
         actions: [
           IconButton(
@@ -530,14 +533,6 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
     );
   }
 
-  Map<String, double?> _buildCaloriesByDay() {
-    final map = <String, double?>{};
-    for (final entry in _reportsByDay.entries) {
-      map[entry.key] = entry.value.totalCaloriiZi;
-    }
-    return map;
-  }
-
   Widget _buildContent(Color accent) {
     final caloriesByDay = <String, double?>{};
     final obiectivByDay = <String, double?>{};
@@ -550,30 +545,54 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
 
     return Column(
       children: [
-        // Butoane prev/next săptămână + Day selector
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.chevron_left),
-                onPressed: _previousWeek,
-              ),
-              Expanded(
-                child: DaySelector(
-                  daysOfWeek: _daysOfWeek,
-                  selectedDay: _selectedDay,
-                  onDaySelected: _selectDay,
-                  caloriesByDay: caloriesByDay,
-                  obiectivByDay: obiectivByDay,
+        const SizedBox(height: 12),
+        Text(DateFormater.formatMonthAndYear(_selectedDay)),
+        GestureDetector(
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity! < 0) {
+              _nextWeek(); // Tragi spre stanga -> Saptamana viitoare
+            } else if (details.primaryVelocity! > 0) {
+              _previousWeek(); // Tragi spre dreapta -> Saptamana trecuta
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              // IconButton(
+              //   icon: const Icon(Icons.chevron_left),
+              //   onPressed: _previousWeek,
+              // ),
+              children: [
+                Expanded(
+                  child: DaySelector(
+                    daysOfWeek: _daysOfWeek,
+                    selectedDay: _selectedDay,
+                    onDaySelected: _selectDay,
+                    caloriesByDay: caloriesByDay,
+                    obiectivByDay: obiectivByDay,
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.chevron_right),
-                onPressed: _nextWeek,
-              ),
-            ],
+              ],
+
+              // IconButton(
+              //   icon: const Icon(Icons.chevron_right),
+              //   onPressed: _nextWeek,
+              // ),
+            ),
           ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: _previousWeek,
+            ),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed: _nextWeek,
+            ),
+          ],
         ),
         const Divider(),
         Expanded(
@@ -584,8 +603,7 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
             },
             itemCount: _daysOfWeek.length,
             itemBuilder: (context, index) {
-              final day = _daysOfWeek[index];
-              return _buildDayContent(day, accent);
+              return _buildDayContent(_selectedDay, accent);
             },
           ),
         ),
@@ -707,7 +725,7 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
                                           Row(
                                             children: [
                                               Icon(
-                                                Icons.check,
+                                                Icons.flag_outlined,
                                                 color: Colors.green,
                                               ),
                                               const SizedBox(width: 4),
@@ -929,7 +947,6 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
                     const SizedBox(height: 12),
                     _buildActivitiesCard(raport.activitatiFizice, day),
                     const SizedBox(height: 12),
-
                   ],
                 ),
               ),

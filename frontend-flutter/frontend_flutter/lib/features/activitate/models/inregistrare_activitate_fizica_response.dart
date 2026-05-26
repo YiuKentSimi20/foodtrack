@@ -1,3 +1,5 @@
+import 'package:frontend_flutter/features/activitate/models/categorie_activitate.dart';
+
 class InregistrareActivitateFizicaResponse {
   final int? id;
   final String? nume;
@@ -7,7 +9,7 @@ class InregistrareActivitateFizicaResponse {
   final double? caloriiArse;
   final int? numarPasi;
   final double? utilizatorKg;
-  final String? categorie;
+  final CategorieActivitate? categorie;
   final String? sursaDate;
   final String? notite;
 
@@ -47,7 +49,9 @@ class InregistrareActivitateFizicaResponse {
       caloriiArse: _toDouble(json['calorii_arse']),
       numarPasi: _toInt(json['numar_pasi']),
       utilizatorKg: _toDouble(json['utilizator_kg']),
-      categorie: json['categorie'] as String?,
+      categorie: json['categorie'] != null
+          ? CategorieActivitate.fromCode(json['categorie'].toString())
+          : null,
       sursaDate: json['sursa_date'] as String?,
       notite: json['notite'] as String?,
     );

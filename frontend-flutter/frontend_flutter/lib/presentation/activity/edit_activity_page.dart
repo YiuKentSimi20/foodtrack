@@ -126,11 +126,9 @@ class _EditActivityPageState extends State<EditActivityPage> {
                 children: [
                   Text(widget.activity.nume ?? 'Activitate', style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 4),
-                  if (widget.activity.met != null)
-                    Text('MET: ${widget.activity.met}', style: Theme.of(context).textTheme.bodySmall),
                   if (widget.activity.categorie != null) ...[
                     const SizedBox(height: 4),
-                    Text('Categorie: ${widget.activity.categorie}', style: Theme.of(context).textTheme.bodySmall),
+                    Text('Categorie: ${widget.activity.categorie?.label}', style: Theme.of(context).textTheme.bodySmall),
                   ],
                   if (widget.activity.caloriiArse != null) ...[
                     const SizedBox(height: 4),

@@ -23,7 +23,6 @@ class _AddActivityPageState extends State<AddActivityPage> {
   late final ActivitateRepository _repo;
   late final TextEditingController _durataController;
   late final TextEditingController _notiteController;
-  DateTime _selectedDate = DateTime.now();
   bool _loading = false;
   String? _error;
 
@@ -96,7 +95,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
                   const SizedBox(height: 4),
                   if (widget.activity.categorie != null) ...[
                     const SizedBox(height: 4),
-                    Text('Categorie: ${widget.activity.categorie}', style: Theme.of(context).textTheme.bodySmall),
+                    Text('Categorie: ${widget.activity.categorie?.label}', style: Theme.of(context).textTheme.bodySmall),
                   ]
                 ],
               ),
