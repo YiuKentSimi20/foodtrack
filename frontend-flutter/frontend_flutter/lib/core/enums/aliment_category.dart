@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 enum AlimentCategory {
-  altele('ALTELE', 'Altele', Icons.category_outlined),
-  buturi('BUTURI', 'Băuturi', Icons.local_drink_outlined),
-  branzeturi('BRANZETURI', 'Brânzeturi', Icons.egg_outlined),
-  carne('CARNE', 'Carne', Icons.set_meal_outlined),
-  cereale('CEREALE', 'Cereale', Icons.grain_outlined),
-  condimente('CONDIMENTE', 'Condimente', Icons.soup_kitchen_outlined),
-  dulciuri('DULCIURI', 'Dulciuri', Icons.cake_outlined),
-  fastFood('FAST_FOOD', 'Fast Food', Icons.fastfood_outlined),
-  fructe('FRUCTE', 'Fructe', Icons.apple_outlined),
-  grasimi('GRASIMI', 'Grăsimi', Icons.oil_barrel_outlined),
-  lactate('LACTATE', 'Lactate', Icons.icecream_outlined),
-  legume('LEGUME', 'Legume', Icons.eco_outlined),
-  mancareGatita('MANCARE_GATITA', 'Mâncare gătită', Icons.soup_kitchen_outlined),
-  mezeluri('MEZELURI', 'Mezeluri', Icons.lunch_dining_outlined),
-  oua('OUA', 'Ouă', Icons.egg_outlined),
-  paine('PAINE', 'Pâine', Icons.bakery_dining_outlined),
-  personal('PERSONAL', 'Personal', Icons.person_outline),
-  peste('PESTE', 'Pește', Icons.set_meal_outlined),
-  seminte('SEMINTE', 'Semințe', Icons.spa_outlined),
-  snackuri('SNACKURI', 'Snack-uri', Icons.cookie_outlined),
-  sosuri('SOSURI', 'Sosuri', Icons.soup_kitchen_outlined),
-  suplimente('SUPLIMENTE', 'Suplimente', Icons.medication_outlined);
+  altele('ALTELE', 'Altele', 'assets/icons/altele.png'),
+  bauturi('BAUTURI', 'Băuturi', 'assets/icons/bauturi.png'),
+  branzeturi('BRANZETURI', 'Brânzeturi', 'assets/icons/branzeturi.png'),
+  carne('CARNE', 'Carne', 'assets/icons/carne.png'),
+  cereale('CEREALE', 'Cereale', 'assets/icons/cereale.png'),
+  condimente('CONDIMENTE', 'Condimente', 'assets/icons/condimente.png'),
+  dulciuri('DULCIURI', 'Dulciuri', 'assets/icons/dulciuri.png'),
+  fastFood('FAST_FOOD', 'Fast Food', 'assets/icons/fast_food.png'),
+  fructe('FRUCTE', 'Fructe', 'assets/icons/fructe.png'),
+  grasimi('GRASIMI', 'Grăsimi', 'assets/icons/grasimi.png'),
+  lactate('LACTATE', 'Lactate', 'assets/icons/lactate.png'),
+  legume('LEGUME', 'Legume', 'assets/icons/legume.png'),
+  mancareGatita('MANCARE_GATITA', 'Mâncare gătită', 'assets/icons/mancare_gatita.png'),
+  mezeluri('MEZELURI', 'Mezeluri', 'assets/icons/mezeluri.png'),
+  oua('OUA', 'Ouă', 'assets/icons/oua.png'),
+  paine('PAINE', 'Pâine', 'assets/icons/paine.png'),
+  peste('PESTE', 'Pește', 'assets/icons/peste.png'),
+  seminte('SEMINTE', 'Semințe', 'assets/icons/seminte.png'),
+  snackuri('SNACKURI', 'Snack-uri', 'assets/icons/snackuri.png'),
+  sosuri('SOSURI', 'Sosuri', 'assets/icons/sosuri.png'),
+  suplimente('SUPLIMENTE', 'Suplimente', 'assets/icons/suplimente.png'),;
 
   final String code;
   final String label;
-  final IconData icon;
+  final String iconPath;
 
-  const AlimentCategory(this.code, this.label, this.icon);
+  const AlimentCategory(this.code, this.label, this.iconPath);
 
   static AlimentCategory fromCode(String code) {
     try {

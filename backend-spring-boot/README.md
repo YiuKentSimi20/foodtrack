@@ -657,6 +657,54 @@ Example response (`ObiectivResponse`):
 
 Toate necesita auth.
 
+### `GET /foodtrack/masuratoare/obiective/calculeaza`
+- Auth: required
+- Query param: `tdeeCaloriesPercentage` (Double) - procent din TDEE pe care utilizatorul vrea sa-l foloseasca pentru calorii (ex: 0.8 pentru deficit 20%)
+- Response: `ObiectivCalculatResponse` (JSON cu campuri `protein`, `carbohydrates`, `fat` - valorile calcultate ca procente sau proportii în funcție de implementare)
+- Descriere: calculeaza distribuția macronutrienților pe baza unui procent din TDEE (transmis ca query param). Endpoint-ul folosește datele utilizatorului (greutate, preferințe) pentru a returna valorile calculate; nu modifică obiectivele stocate.
+
+Example curl (exemplu folosind query param):
+```bash
+curl -v -G \
+  -H "Authorization: Bearer <JWT>" \
+  --data-urlencode "tdeeCaloriesPercentage=0.8" \
+  http://localhost:8083/foodtrack/masuratoare/obiective/calculeaza
+```
+
+Example response (`ObiectivCalculatResponse`):
+```json
+{
+  "protein": 200,
+  "carbohydrates": 300,
+  "fat": 100
+}
+```
+
+Possible error responses (calculeaza):
+
+- Bad Request (400) - missing or invalid `tdeeCaloriesPercentage`
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Missing or invalid query parameter 'tdeeCaloriesPercentage'",
+  "path": "/foodtrack/masuratoare/obiective/calculeaza",
+  "timestamp": "2026-05-25T12:00:00"
+}
+```
+
+- Unauthorized (401) if token missing/invalid
+
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "Full authentication is required to access this resource",
+  "timestamp": "2026-05-25T12:00:00"
+}
+```
+
 ## UtilizatorController
 Base path: `/foodtrack/utilizator`
 

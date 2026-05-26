@@ -7,6 +7,7 @@ import com.licenta.foodtrack.dto.CreateAlimentRequest;
 import com.licenta.foodtrack.dto.DetaliiAlimentResponse;
 import com.licenta.foodtrack.exception.ValidationExceptionHandler;
 import com.licenta.foodtrack.model.Aliment;
+import com.licenta.foodtrack.model.NutritionScore;
 import com.licenta.foodtrack.model.Utilizator;
 import com.licenta.foodtrack.service.AlimentService;
 import jakarta.validation.Valid;
@@ -76,12 +77,14 @@ public class AlimentController
     }
 
     @PatchMapping("/validate")
-    public ResponseEntity<ApiResponse<AlimentDto>> validateAliment(@RequestParam Long id) {
+    public ResponseEntity<ApiResponse<AlimentDto>> validateAliment(
+            @RequestParam Long id,
+            @RequestParam NutritionScore nutritionScore) {
 
         return ResponseEntity.ok(ApiResponse.<AlimentDto>builder()
                 .status(200)
                 .message("Aliment validat cu succes")
-                .data(alimentService.validateAliment(id))
+                .data(alimentService.validateAliment(id, nutritionScore))
                 .build()
         );
     }

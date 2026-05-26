@@ -1,8 +1,6 @@
 package com.licenta.foodtrack.repository;
 
-import com.licenta.foodtrack.dto.AlimentDto;
 import com.licenta.foodtrack.model.Aliment;
-import com.licenta.foodtrack.service.AlimentService;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -22,5 +20,5 @@ public interface AlimentRepository extends JpaRepository<Aliment, Long> {
 
     List<Aliment> findAllByCreatedByUserId(UUID createdByUserId);
 
-    List<Aliment> findAllByIsValidatedFalse(UUID id);
+    List<Aliment> findAllByIsValidatedFalseAndCodeNotNull(UUID id);
 }

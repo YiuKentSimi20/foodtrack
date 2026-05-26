@@ -106,5 +106,15 @@ public class MasuratoareController {
         return ResponseEntity.ok(masuratoareService.getObiectivPreview(obiectivDto, utilizator.getId()));
     }
 
+    @GetMapping("/obiective/calculeaza")
+    public ResponseEntity<ObiectivCalculatResponse> calculeazaObiectiv(
+            @RequestParam Double tdeeCaloriesPercentage,
+            @AuthenticationPrincipal Utilizator utilizator) {
+
+        return ResponseEntity.ok(masuratoareService.calculeazaObiectiv(tdeeCaloriesPercentage, utilizator.getId()));
+
+    }
+
+
 
 }

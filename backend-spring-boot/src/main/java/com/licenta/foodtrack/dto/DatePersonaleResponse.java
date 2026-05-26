@@ -14,6 +14,7 @@ public record DatePersonaleResponse(
         LocalDate dataNasterii,
         Integer varsta,
         GenUtilizator gen,
+        @JsonProperty("nivel_activitate")
         NivelActivitate nivelActivitate,
         Double bmi,
         Double bmr,

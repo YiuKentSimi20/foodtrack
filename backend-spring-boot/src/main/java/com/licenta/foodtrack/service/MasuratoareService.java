@@ -10,6 +10,7 @@ import com.licenta.foodtrack.util.MacroProcentsCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,8 +83,8 @@ public class MasuratoareService {
                             proteinKgCorp,
                             carbsKgCorp,
                             fatKgCorp,
-                            o.calculateNetCalories(),
-                            o.calculateWeightCaloriesPerWeek()
+                            o.calculateNetCalories(o.getDataStart()),
+                            o.calculateWeightCaloriesPerWeek(o.getDataStart())
                     );
                         }
                 )
@@ -186,8 +187,25 @@ public class MasuratoareService {
                 proteinKgCorp,
                 carbsKgCorp,
                 fatKgCorp,
-                obiectiv.calculateNetCalories(),
-                obiectiv.calculateWeightCaloriesPerWeek()
+                obiectiv.calculateNetCalories(LocalDate.now()),
+                obiectiv.calculateWeightCaloriesPerWeek(LocalDate.now())
         );
+    }
+
+    public ObiectivCalculatResponse calculeazaObiectiv(Double tdeeCaloriesPercentage, UUID utilizatorId) {
+
+        Utilizator utilizator = utilizatorRepository.findById(utilizatorId)
+                .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost găsit"));
+
+        Double tdee = utilizator.calculateTdee(LocalDate.now());
+        Double calories = tdee * tdeeCaloriesPercentage;
+        Double proteinPercent = 0.2;
+        Double carbsPercent = 0.5;
+        Double fatPercent = 0.3;
+        Double protein = calories * proteinPercent / 4;
+        Double carbohydrates = calories * carbsPercent / 4;
+        Double fat = calories * fatPercent / 9;
+
+        return new ObiectivCalculatResponse(protein, carbohydrates, fat);
     }
 }

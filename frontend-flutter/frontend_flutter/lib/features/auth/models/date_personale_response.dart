@@ -1,3 +1,5 @@
+import 'package:frontend_flutter/core/enums/nivel_activitate.dart';
+
 class DatePersonaleResponse {
   final String? username;
   final String? email;
@@ -5,7 +7,7 @@ class DatePersonaleResponse {
   final String? dataNasterii;
   final int? varsta;
   final String? gen;
-  final String? nivelActivitate;
+  final NivelActivitate? nivelActivitate;
   final double? bmi;
   final double? bmr;
   final double? tdee;
@@ -34,7 +36,9 @@ class DatePersonaleResponse {
       dataNasterii: json['data_nasterii'] as String?,
       varsta: (json['varsta'] as num?)?.toInt(),
       gen: json['gen'] as String?,
-      nivelActivitate: json['nivelActivitate'] as String?,
+      nivelActivitate: json['nivel_activitate'] != null ?
+          NivelActivitate.fromCode(json['nivel_activitate'].toString())
+          : null,
       bmi: parseNum(json['bmi'])?.toDouble(),
       bmr: parseNum(json['bmr'])?.toDouble(),
       tdee: parseNum(json['tdee'])?.toDouble(),

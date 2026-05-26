@@ -155,12 +155,12 @@ public class MasaService {
                     .map(InregistrareActivitateFizica::getCaloriiArse)
                     .mapToDouble(Double::doubleValue).sum();
 
-            Double caloriiNete = utilizator.calculateBmr() + caloriiArse - totalEnergyKcal;
+            Double caloriiNete = utilizator.calculateBmr(date) + caloriiArse - totalEnergyKcal;
 
             if(utilizator.getActivitatiFizice().stream()
                     .filter(a -> a.getDataActivitate().equals(date))
                     .toList().isEmpty()) {
-                caloriiNete = utilizator.calculateTdee() - totalEnergyKcal;
+                caloriiNete = utilizator.calculateTdee(date) - totalEnergyKcal;
             }
 
             MacroProcentsCalculator.MacroPercents macroPercents = MacroProcentsCalculator.calcPercentsSumOne(

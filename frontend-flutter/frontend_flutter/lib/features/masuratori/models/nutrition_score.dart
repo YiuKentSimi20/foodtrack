@@ -25,6 +25,23 @@ enum NutritionScore {
     }
   }
 
+  String get code {
+    switch (this) {
+      case NutritionScore.A:
+        return 'A';
+      case NutritionScore.B:
+        return 'B';
+      case NutritionScore.C:
+        return 'C';
+      case NutritionScore.D:
+        return 'D';
+      case NutritionScore.E:
+        return 'E';
+      case NutritionScore.UNKNOWN:
+        return 'UNKNOWN';
+    }
+  }
+
   String get label {
     switch (this) {
       case NutritionScore.A:
@@ -76,7 +93,26 @@ enum NutritionScore {
     }
   }
 
+  String get iconPath {
+    switch (this) {
+      case NutritionScore.A:
+        return 'assets/icons/nutriscore_a.png';
+      case NutritionScore.B:
+        return 'assets/icons/nutriscore_b.png';
+      case NutritionScore.C:
+        return 'assets/icons/nutriscore_c.png';
+      case NutritionScore.D:
+        return 'assets/icons/nutriscore_d.png';
+      case NutritionScore.E:
+        return 'assets/icons/nutriscore_e.png';
+      case NutritionScore.UNKNOWN:
+        return '';
+    }
+  }
+
   bool get isKnown => this != NutritionScore.UNKNOWN;
 
+
+  static List<NutritionScore> get sortedList => values;
 
 }

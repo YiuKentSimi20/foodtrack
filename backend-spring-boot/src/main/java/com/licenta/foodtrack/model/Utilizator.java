@@ -244,16 +244,27 @@ public class Utilizator implements UserDetails {
         return getLastMasuratoareGreutate().orElse(0.0) / Math.pow(getLastMasuratoareInaltime().orElse(1.0) / 100, 2);
     }
 
-    public Double calculateBmr() {
+    public Double calculateBmr(LocalDate date) {
 
-        return 10 * getLastMasuratoareGreutate().orElse(0.0)
-                + 6.25 * getLastMasuratoareInaltime().orElse(0.0)
+        return this.masuratoriGrasimeCorporala.isEmpty() ? calculateBmrHarrisBenedict(date) : calculateBmrKatchMcArdle(date);
+
+    }
+
+    public Double calculateBmrHarrisBenedict(LocalDate date) {
+
+        return 10 * getMasuratoareGreutateFor(date).orElse(0.0)
+                + 6.25 * getMasuratoareInaltimeFor(date).orElse(0.0)
                 - 5 * (LocalDate.now().getYear() - dataNasterii.getYear())
                 + (gen == GenUtilizator.M ? 5 : -161);
     }
 
-    public Double calculateTdee() {
-        double bmr = calculateBmr();
+    public Double calculateBmrKatchMcArdle(LocalDate date) {
+
+        return 370 + (21.6 * getMasuratoareGreutateFor(date).orElse(0.0) * (1 - getMasuratoareGrasimeCorporalaFor(date).orElse(0.0) / 100));
+    }
+
+    public Double calculateTdee(LocalDate date) {
+        double bmr = calculateBmr(date);
         return switch (nivelActivitate != null ? nivelActivitate : NivelActivitate.SEDENTAR ) {
             case SEDENTAR -> bmr * 1.2;
             case MAI_PUTIN_ACTIV -> bmr * 1.375;

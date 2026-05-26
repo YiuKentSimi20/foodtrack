@@ -29,7 +29,6 @@ class ProfileRepository {
         '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
     try {
-      debugPrint('Updating date personale with data_nasterii: ${fmt(dataNasterii)}, gen: $gen, nivel_activitate: $nivelActivitate');
       await apiClient.dio.patch(
         '/foodtrack/utilizator/modifica-date-personale',
         data: {

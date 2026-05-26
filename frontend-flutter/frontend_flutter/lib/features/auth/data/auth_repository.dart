@@ -29,7 +29,7 @@ class AuthRepository {
         final message = data['message']?.toString() ?? 'Login failed';
         throw Exception(message);
       }
-      throw Exception('Nu m-am putut conecta la server.');
+      throw Exception('Nu s-a putut face conexiunea la server.');
     }
   }
 
@@ -50,7 +50,7 @@ class AuthRepository {
         final message = data['message']?.toString() ?? 'Login failed';
         throw Exception(message);
       }
-      throw Exception('Nu m-am putut conecta la server.');
+      throw Exception('Nu s-a putut face conexiunea la server.');
     }
   }
 

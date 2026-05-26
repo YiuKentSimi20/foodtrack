@@ -2,11 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'core/api_client.dart';
 import 'core/token_storage.dart';
-import 'features/auth/presentation/login_page.dart';
+import 'presentation/login_page.dart';
 import 'core/theme.dart';
-import 'features/auth/presentation/objectives/manual_objective_page.dart';
-import 'features/auth/presentation/register_measurements_page.dart';
-import 'features/auth/presentation/today_jurnal_page.dart';
+import 'presentation/obiective/add_obiectiv_page.dart';
+import 'presentation/register_measurements_page.dart';
+import 'presentation/today_jurnal_page.dart';
 import 'features/masuratori/data/masuratori_repository.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -78,7 +78,7 @@ class _StartupGateState extends State<StartupGate> {
       }
 
       if (obiective.isEmpty) {
-        return const ManualObjectivePage(mode: 'register');
+        return const NewObiectivPage(mode: 'register');
       }
 
       return const TodayJournalPage();

@@ -2,6 +2,7 @@ package com.licenta.foodtrack.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.licenta.foodtrack.model.CategorieAliment;
+import com.licenta.foodtrack.model.NutritionScore;
 import com.licenta.foodtrack.validation.annotations.EnumNamePattern;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -44,7 +45,10 @@ public record CreateAlimentRequest(
                         "PESTE, SEMINTE, SNACKURI, SOSURI, SUPLIMENTE"
         )
         @JsonProperty("categorie")
-        CategorieAliment categorie
+        CategorieAliment categorie,
+
+        @JsonProperty("nutrition_score")
+        NutritionScore nutritionScore
 
 ) {
 }

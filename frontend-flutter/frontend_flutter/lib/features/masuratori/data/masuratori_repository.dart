@@ -5,6 +5,7 @@ import 'package:frontend_flutter/features/masuratori/models/obiectiv_response.da
 import '../../../core/api_client.dart';
 import '../../masuratori/models/masuratoare_greutate_dto.dart';
 import '../../masuratori/models/masuratoare_inaltime_dto.dart';
+import '../models/obiectiv_calculat_response.dart';
 import '../models/obiectiv_dto.dart';
 
 class MasuratoriRepository {
@@ -56,7 +57,6 @@ class MasuratoriRepository {
       };
       final resp = await apiClient.dio.post('/foodtrack/masuratoare/greutate', data: body);
       final payload = _extractDataObject(resp.data);
-      debugPrint(payload.toString());
       return MasuratoareGreutateDto.fromJson(payload as Map<String, dynamic>);
     } on DioException catch (e) {
       throw Exception(e.response?.data?['message'] ?? e.message);
@@ -146,14 +146,12 @@ class MasuratoriRepository {
 
   Future<ObiectivResponse> previewObiectiv(ObiectivDto dto) async {
     try {
-      debugPrint('Requesting preview for DTO: ${dto.toJson()}');
       final resp = await apiClient.dio.get(
         '/foodtrack/masuratoare/obiective/preview',
         data: dto.toJson(),
       );
 
       final payload = resp.data;
-      debugPrint('Preview response payload: ${payload.toString()}');
       return ObiectivResponse.fromJson(payload as Map<String, dynamic>);
     } on DioException catch (e) {
       final d = e.response?.data;
@@ -162,5 +160,18 @@ class MasuratoriRepository {
       }
       throw Exception(e.message ?? 'Eroare la preview obiectiv');
     }
+  }
+
+  Future<ObiectivCalculatResponse> getObiectivCalculat({
+    required double tdeeCaloriesPercentage,
+  }) async {
+    final resp = await apiClient.dio.get(
+      '/foodtrack/masuratoare/obiective/calculeaza',
+      queryParameters: {
+        'tdeeCaloriesPercentage': tdeeCaloriesPercentage,
+      },
+    );
+
+    return ObiectivCalculatResponse.fromJson(resp.data);
   }
 }

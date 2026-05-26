@@ -92,7 +92,7 @@ public class AlimentService {
         aliment.setIsValidated(false);
         aliment.setCreatedByUserId(idUtilizatorCurent);
 
-        if(alimentRepository.existsByCode(aliment.getCode())) {
+        if(alimentRepository.existsByCode(aliment.getCode() != null ? aliment.getCode() : "")) {
             throw new IllegalStateException("Un aliment cu codul de bare " + aliment.getCode() + " există deja în baza de date.");
         }
 
@@ -122,6 +122,7 @@ public class AlimentService {
         if (request.protein100g() != null) { aliment.setProtein100g(request.protein100g()); }
         if (request.salt100g() != null) { aliment.setSalt100g(request.salt100g()); }
         if (request.categorie() != null) { aliment.setCategorie(request.categorie()); }
+        if (request.nutritionScore() != null) { aliment.setNutritionScore(request.nutritionScore()); }
 
         // La update, alimentul trebuie revalidat
         aliment.setIsValidated(false);
@@ -130,12 +131,13 @@ public class AlimentService {
         return alimentMapper.toDto(alimentRepository.save(aliment));
     }
 
-    public AlimentDto validateAliment(Long id) {
+    public AlimentDto validateAliment(Long id, NutritionScore nutritionScore) {
 
         Aliment aliment = alimentRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Alimentul cu id-ul " + id + " nu a fost găsit"));
 
         aliment.setIsValidated(true);
+        aliment.setNutritionScore(nutritionScore);
 
 
 
@@ -152,7 +154,7 @@ public class AlimentService {
 
     public List<AlimentDto> getAlimenteNevalidate(UUID id) {
 
-        return alimentRepository.findAllByIsValidatedFalse(id)
+        return alimentRepository.findAllByIsValidatedFalseAndCodeNotNull(id)
                 .stream()
                 .map(alimentMapper::toDto)
                 .toList();

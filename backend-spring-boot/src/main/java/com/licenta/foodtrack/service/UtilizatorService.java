@@ -34,8 +34,8 @@ public class UtilizatorService {
                 utilizator.getGen(),
                 utilizator.getNivelActivitate(),
                 utilizator.calculateBmi(),
-                utilizator.calculateBmr(),
-                utilizator.calculateTdee()
+                utilizator.calculateBmr(LocalDate.now()),
+                utilizator.calculateTdee(LocalDate.now())
         );
     }
 
@@ -57,7 +57,7 @@ public class UtilizatorService {
             utilizator.setNivelActivitate(request.nivelActivitate());
         }
         if(request.dataNasterii()!=null || request.nivelActivitate()!=null) {
-            utilizator.setNecesarCaloricMentinere(utilizator.calculateTdee());
+            utilizator.setNecesarCaloricMentinere(utilizator.calculateTdee(LocalDate.now()));
         }
 
         utilizatorRepository.save(utilizator);
@@ -71,8 +71,8 @@ public class UtilizatorService {
                 utilizator.getGen(),
                 utilizator.getNivelActivitate(),
                 utilizator.calculateBmi(),
-                utilizator.calculateBmr(),
-                utilizator.calculateTdee()
+                utilizator.calculateBmr(LocalDate.now()),
+                utilizator.calculateTdee(LocalDate.now())
         );
     }
 }

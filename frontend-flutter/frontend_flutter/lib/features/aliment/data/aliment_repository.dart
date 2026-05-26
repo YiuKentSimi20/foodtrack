@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:frontend_flutter/core/enums/aliment_category.dart';
 import 'package:frontend_flutter/features/masuratori/models/nutrition_score.dart';
 import '../../../core/api_client.dart';
-import '../../auth/models/aliment_dto.dart';
-import '../../auth/models/detalii_aliment_response.dart';
+import '../models/aliment_dto.dart';
+import '../models/detalii_aliment_response.dart';
 import '../../mese/models/inregistrare_aliment_response.dart';
 
 class AlimentRepository {
@@ -59,6 +59,7 @@ class AlimentRepository {
     required double protein100g,
     required double salt100g,
     required String categorie,
+    required String nutritionScore
   }) async {
     try {
       final resp = await apiClient.dio.post(
@@ -76,6 +77,7 @@ class AlimentRepository {
           'protein_100g': protein100g,
           'salt_100g': salt100g,
           'categorie': categorie,
+          'nutrition_score': nutritionScore,
         },
       );
 
@@ -89,7 +91,6 @@ class AlimentRepository {
         throw Exception('Format invalid răspuns creare aliment');
       }
 
-      debugPrint(payload.toString());
       return AlimentDto.fromJson(payload);
     } on DioException catch (e) {
       final msg = e.response?.data?['message'] ?? e.message;
@@ -297,11 +298,14 @@ class AlimentRepository {
     }
   }
 
-  Future<AlimentDto> validateAliment(int id) async {
+  Future<AlimentDto> validateAliment(int id, String nutritionScore) async {
     try {
       final resp = await apiClient.dio.patch(
         '/foodtrack/aliment/validate',
-        queryParameters: {'id': id},
+        queryParameters: {
+          'id': id,
+          'nutritionScore': nutritionScore,
+        },
       );
       final payload = _extractDataObject(resp.data);
       return AlimentDto.fromJson(payload as Map<String, dynamic>);

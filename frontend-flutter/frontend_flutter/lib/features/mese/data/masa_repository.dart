@@ -82,7 +82,6 @@ class MasaRepository {
       // construim payload: listă de obiecte
       final categorii = categories.map((c) => c.toJson()).toList();
       final payload = {'categorii_mese': categorii};
-      debugPrint(payload.toString());
       await apiClient.dio.put('/foodtrack/masa/categorie-masa', data: payload);
     } on DioException catch (e) {
       final msg = e.response?.data?['message'] ?? e.message;
@@ -98,7 +97,6 @@ class MasaRepository {
       if (data is Map<String, dynamic>) {
         // Dacă backend returnează direct MasaResponse
         if (data.containsKey('id') && data.containsKey('alimente')) {
-          debugPrint("Răspuns direct pentru MasaResponse: $data");
           return MasaResponse.fromJson(data);
         }
 

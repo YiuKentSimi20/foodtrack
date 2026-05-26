@@ -44,19 +44,17 @@ public class Obiectiv {
         return getFatCalories() + getCarbohydratesCalories() + getProteinCalories();
     }
 
-    public Double calculateNetCalories() {
+    public Double calculateNetCalories(LocalDate date) {
         //asta ramane asa deocamdata si daca adaug si calorii arse calculez de acolo
-        return utilizator.calculateTdee() - calories;
+        return utilizator.calculateTdee(date) - calories;
     }
 
-    public Double calculateWeightCaloriesPerWeek() {
-        return -((calculateNetCalories() * 7) / 7700);
+    public Double calculateWeightCaloriesPerWeek(LocalDate date) {
+        return -((calculateNetCalories(date) * 7) / 7700);
     }
 
     public Boolean nutrientsAreValid() {
         return calories == getFatCalories() + getCarbohydratesCalories() + getProteinCalories();
     }
-
-
 
 }
