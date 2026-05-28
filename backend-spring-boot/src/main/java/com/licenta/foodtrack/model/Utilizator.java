@@ -144,7 +144,7 @@ public class Utilizator implements UserDetails {
 
     public Optional<Double> getLastMasuratoareInaltime() {
         return Optional.of(this.masuratoriInaltime.isEmpty() ?
-                0.0 : this.masuratoriInaltime.getLast().getInaltimeCm());
+                1 : this.masuratoriInaltime.getLast().getInaltimeCm());
     }
 
     public Optional<Double> getLastMasuratoareGrasimeCorporala() {
