@@ -127,25 +127,38 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
             ),
             const SizedBox(height: 12),
 
-            DropdownButtonFormField<String>(
-              initialValue: _activityLevel?.displayName,
-              decoration: const InputDecoration(
-                labelText: 'Nivel activitate fizică',
-                border: OutlineInputBorder(),
-              ),
-              items: NivelActivitate.values
+            const Text(
+              'Nivel activitate fizică',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            Column(
+              children: NivelActivitate.values
                   .map(
-                    (e) => DropdownMenuItem<String>(
-                  value: e.displayName,
-                  child: Text(e.description),
+                    (nivel) => RadioListTile<NivelActivitate>(
+                  value: nivel,
+                  groupValue: _activityLevel,
+                  onChanged: (value) {
+                    setState(() => _activityLevel = value);
+                  },
+                  title: Text(
+                    nivel.displayName,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text(nivel.description),
+                  contentPadding: EdgeInsets.zero,
                 ),
               )
                   .toList(),
-              onChanged: (v) => setState(() => _activityLevel = NivelActivitate.fromCode(v!)),
-              validator: (v) => (v == null || v.isEmpty)
-                  ? 'Selectează nivelul de activitate'
-                  : null,
             ),
+            if (_activityLevel == null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  'Selectează nivelul de activitate',
+                  style: TextStyle(color: Colors.red.shade700, fontSize: 12),
+                ),
+              ),
             const SizedBox(height: 16),
 
             if (_error != null)

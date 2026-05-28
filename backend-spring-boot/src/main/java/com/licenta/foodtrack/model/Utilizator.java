@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 
 @Entity
@@ -271,6 +272,10 @@ public class Utilizator implements UserDetails {
             case ACTIV -> bmr * 1.55;
             case FOARTE_ACTIV -> bmr * 1.725;
         };
+    }
+
+    public int getVarsta() {
+        return Period.between(dataNasterii, LocalDate.now()).getYears();
     }
 
     @Override

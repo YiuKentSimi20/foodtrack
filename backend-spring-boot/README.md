@@ -886,7 +886,7 @@ Notă: `nume_masa` este cheia JSON, dar reprezintă `categorieMasaId` (Long) în
 - `id`, `categorie_masa_id`, `data`, `ora`, `notite`
 - `grams_total`, `energy_kcal_total`, `energy_kj_total`, `fat_total`, `fat_percent`, `saturated_fat_total`, `carbohydrates_total`, `carbohydrates_percent`, `sugars_total`, `fiber_total`, `protein_total`, `protein_percent`, `salt_total`, `alimente` (listă de `InregistrareAlimentResponse`)
 
-`MesePeZiResponse` (exemplu complet)
+`MesePeZiResponse` (proprietăți JSON exacte)
 ```json
 {
   "data": "2026-05-02",
@@ -894,26 +894,42 @@ Notă: `nume_masa` este cheia JSON, dar reprezintă `categorieMasaId` (Long) în
   "activitati_fizice": [],
   "obiectiv_calorii": 2200.0,
   "obiectiv_proteine": 150.0,
+  "obiectiv_proteine_procent": 25.0,
   "obiectiv_carbohidrati": 250.0,
+  "obiectiv_carbohidrati_procent": 45.0,
   "obiectiv_grasimi": 70.0,
+  "obiectiv_grasimi_procent": 30.0,
+  "grams_total": 650.0,
   "energy_kcal_total": 1800.0,
   "energy_kj_total": 7536.0,
   "fat_total": 55.0,
   "fat_percent": 27.5,
   "saturated_fat_total": 18.0,
+  "saturated_fat_recommended_grams": 22.0,
+  "saturated_fat_percent": 81.8,
   "carbohidrati_total": 210.0,
   "carbohydrates_percent": 46.0,
   "sugars_total": 60.0,
+  "free_sugars_total": 20.0,
+  "free_sugars_percent": 22.2,
+  "free_sugars_recommended_grams": 90.0,
   "fiber_total": 20.0,
+  "fiber_recommended_grams": 25.0,
+  "fiber_message": "OK",
   "proteine_total": 95.0,
   "protein_percent": 21.0,
   "salt_total": 4.5,
+  "salt_recommended_grams": 5.0,
+  "vegetables_togal_grams": 180.0,
+  "fruits_total_grams": 120.0,
+  "fruits_and_vegetables_recommended_grams": 400.0,
+  "fruits_and_vegetables_message": "Sub recomandare",
   "calorii_arse": 300.0,
   "calorii_nete": 400.0
 }
 ```
 
-Observație: JSON-ul conține atât `carbohidrati_total` (română) cât și `carbohydrates_percent` (engleză) — folosește exact cheile din DTO.
+Observație: în DTO cheile JSON sunt exact cele de mai sus, inclusiv `activitati_fizice`, `obiectiv_*_procent`, `grams_total`, `free_sugars_*`, `saturated_fat_*`, `salt_recommended_grams`, `vegetables_togal_grams`, `fruits_total_grams` și `fruits_and_vegetables_*`.
 
 ### Categorii mese DTO
 

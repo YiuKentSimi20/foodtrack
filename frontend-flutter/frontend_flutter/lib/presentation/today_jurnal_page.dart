@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_flutter/core/constants/macro_colors.dart';
+import 'package:frontend_flutter/core/date_helper.dart';
 import 'package:frontend_flutter/core/health_service.dart';
 import 'package:frontend_flutter/features/activitate/data/activitate_repository.dart';
 import 'package:frontend_flutter/presentation/profile_page.dart';
 import 'package:frontend_flutter/presentation/search_food_page.dart';
-import 'package:frontend_flutter/presentation/widgets/info_chart.dart';
 import 'package:frontend_flutter/presentation/widgets/macro_ring.dart';
 import 'package:frontend_flutter/presentation/widgets/day_selector.dart';
 import 'package:frontend_flutter/features/masuratori/models/nutrition_score.dart';
@@ -16,13 +16,15 @@ import '../core/api_client.dart';
 import '../features/mese/data/masa_repository.dart';
 import '../features/mese/models/mese_pe_zi_response.dart';
 import '../main.dart';
-import '../util/date_formater.dart';
+import '../core/date_formater.dart';
 import '../features/activitate/models/inregistrare_activitate_fizica_response.dart';
 import '../features/mese/models/categorie_masa_dto.dart';
 import 'activity/edit_activity_page.dart';
 import 'activity/search_activity_page.dart';
 import 'login_page.dart';
 import 'meal_detail_page.dart';
+import 'nutrition_analytics_page.dart';
+import 'nutrition_day_detail_page.dart';
 
 class TodayJournalPage extends StatefulWidget {
   const TodayJournalPage({super.key});
@@ -60,7 +62,7 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
       apiClient: ApiClient(tokenStorage),
     );
     _healthConnectService = HealthConnectService();
-    _initWeek();
+    _initWeek(DateTime.now());
 
     final todayIndex = _getTodayIndex();
     _selectedDay = _daysOfWeek[todayIndex >= 0 ? todayIndex : 0];
@@ -86,11 +88,11 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
 
   Map<String, MesePeZiResponse> _reportsByDay = {}; // key: yyyy-MM-dd
 
-  void _initWeek() {
-    final now = DateTime.now();
-    final monday = now.subtract(Duration(days: now.weekday - 1));
+  void _initWeek(DateTime? referenceDay) {
+    final day = referenceDay ?? DateTime.now();
+    final monday = day.subtract(Duration(days: day.weekday - 1));
     _daysOfWeek = List.generate(7, (i) => monday.add(Duration(days: i)));
-    _selectedDay = now;
+    _selectedDay = day;
   }
 
   String _formatDate(DateTime d) =>
@@ -490,13 +492,28 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
     final accent = Theme.of(context).colorScheme.secondary;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Jurnal - ${DateFormater.formatNiceDate(_selectedDay)}'),
+        title: Text('Jurnal - ${DateHelper.formatRelativeDate(_selectedDay)}'),
         backgroundColor: accent,
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_today),
-            onPressed: () {
-              // TODO: calendar pentru mai târziu
+            onPressed: () async {
+              final pickedDay = await showDatePicker(
+                  context: context,
+                  firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                  lastDate: DateTime.now().add(const Duration(days: 365)),
+                  initialDate: _selectedDay
+              );
+
+              if (pickedDay != null) {
+                setState(() {
+                  _selectedDay = pickedDay;
+                  _initWeek(_selectedDay);
+                });
+
+                _loadRaport();
+              }
+
             },
           ),
           IconButton(
@@ -558,10 +575,6 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
-              // IconButton(
-              //   icon: const Icon(Icons.chevron_left),
-              //   onPressed: _previousWeek,
-              // ),
               children: [
                 Expanded(
                   child: DaySelector(
@@ -573,11 +586,6 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
                   ),
                 ),
               ],
-
-              // IconButton(
-              //   icon: const Icon(Icons.chevron_right),
-              //   onPressed: _nextWeek,
-              // ),
             ),
           ),
         ),
@@ -588,13 +596,35 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
               icon: const Icon(Icons.chevron_left),
               onPressed: _previousWeek,
             ),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => NutritionAnalyticsPage(
+                    initialDate: _selectedDay,
+                  )),
+                );
+              },
+              icon: Icon(Icons.ssid_chart, size: 16, color: accent),
+              label: Text(
+                  'Analiză',
+                  style: TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.w400),
+
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                minimumSize: Size(0, 32),
+                backgroundColor: Colors.white
+              )
+            ),
+
             IconButton(
               icon: const Icon(Icons.chevron_right),
               onPressed: _nextWeek,
             ),
           ],
         ),
-        const Divider(),
+
         Expanded(
           child: PageView.builder(
             controller: _pageController,
@@ -655,9 +685,19 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Total ${DateFormater.formatNiceDate(day)}',
-                              style: Theme.of(context).textTheme.titleMedium,
+                            TextButton.icon(
+                              icon: const Icon(Icons.more_horiz_outlined, size: 18),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => NutritionDayDetailPage(day: raport),
+                                  ),
+                                );
+                              },
+                              label: Text(
+                                'Vezi detalii',
+                                style: TextStyle(fontSize: 14),
+                              ),
                             ),
                             const SizedBox(height: 12),
                             Builder(
@@ -688,7 +728,7 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
                                             ),
                                             valueColor:
                                                 AlwaysStoppedAnimation<Color>(
-                                                  accent,
+                                                  caloriiRamase > 0 ? accent: Colors.deepOrangeAccent,
                                                 ),
                                           ),
                                           Center(

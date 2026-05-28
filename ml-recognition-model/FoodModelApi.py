@@ -6,7 +6,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as transforms
-from torchvision.models import resnet50, ResNet50_Weights
 import pandas as pd
 import os
 import io
@@ -22,15 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "food_101_model.pth"
 
 def load_model():
-    # Initialize the model architecture (ResNet50)
-    model = torchvision.models.resnet50()
-    model.fc = nn.Sequential(
-        nn.Dropout(0.4),
-        nn.Linear(model.fc.in_features, 101)
-    )
+    # Initializam arhitectura EfficientNet-B2
+    model = torchvision.models.efficientnet_b2()
     
-    # Load the pretrained weights with the correct path
-    MODEL_PATH = "ml-recognition-model/food101_my_model.pth"
+    # Modificăm capul de clasificare pentru cele 101 clase ale tale
+    num_features = model.classifier[1].in_features
+    model.classifier[1] = nn.Linear(num_features, 101)
+    
+    # Incarcam modelul antrenat
+    MODEL_PATH = "ml-recognition-model/efficientnet_b2_food101_best_71_20test.pth"
     checkpoint = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
     
     # Access the model state dict from the checkpoint
@@ -45,10 +44,11 @@ def load_model():
 
 def preprocess_image(image):
     transform = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
+        transforms.Resize((320, 320), interpolation = transforms.InterpolationMode.BICUBIC),
+        transforms.CenterCrop(288),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+                           std=[0.229, 0.224, 0.225])
     ])
     
     image_tensor = transform(image)

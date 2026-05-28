@@ -1,10 +1,7 @@
 package com.licenta.foodtrack.service;
 
-import com.licenta.foodtrack.auth.RegisterRequest;
 import com.licenta.foodtrack.dto.DatePersonaleResponse;
 import com.licenta.foodtrack.dto.ModificaDatePersonaleRequest;
-import com.licenta.foodtrack.mapper.UtilizatorMapper;
-import com.licenta.foodtrack.model.RolUtilizator;
 import com.licenta.foodtrack.model.Utilizator;
 import com.licenta.foodtrack.repository.UtilizatorRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +27,7 @@ public class UtilizatorService {
                 utilizator.getEmail(),
                 utilizator.getRole().toString(),
                 utilizator.getDataNasterii(),
-                Period.between(utilizator.getDataNasterii(), LocalDate.now()).getYears(),
+                utilizator.getVarsta(),
                 utilizator.getGen(),
                 utilizator.getNivelActivitate(),
                 utilizator.calculateBmi(),

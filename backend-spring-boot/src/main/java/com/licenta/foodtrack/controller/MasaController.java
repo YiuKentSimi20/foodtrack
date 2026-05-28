@@ -45,7 +45,6 @@ public class MasaController {
 
         return ResponseEntity.ok(masaService.getRaport(startDate, endDate, utilizator.getId()));
 
-        //TODO: La raport trebuie sa
     }
 
     @PostMapping("/adauga-inregistrare-aliment")

@@ -63,7 +63,9 @@ class DaySelector extends StatelessWidget {
                         value: progress,
                         strokeWidth: 3,
                         backgroundColor: accent.withValues(alpha: 0.3),
-                        valueColor: AlwaysStoppedAnimation<Color>(accent),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            kcal > obiectiv ? Colors.deepOrangeAccent:accent
+                        ),
                       ),
                     ),
                     Text(

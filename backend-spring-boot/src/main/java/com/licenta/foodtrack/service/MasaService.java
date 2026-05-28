@@ -121,6 +121,11 @@ public class MasaService {
 
         List<Masa> mese = masaRepository.findAllByUtilizatorId(idUtilizatorCurent).stream().filter(
                 masa -> masa.getCategorieMasa().getIsActive()
+        ).filter(
+                masa -> masa.getDataMesei().isEqual(startDate)
+                        || masa.getDataMesei().isEqual(endDate)
+                        || (masa.getDataMesei().isAfter(startDate)
+                        && masa.getDataMesei().isBefore(endDate))
         ).toList();
 
         Map<LocalDate, List<Masa>> mesePeZile = mese.stream()
@@ -174,6 +179,66 @@ public class MasaService {
             );
 
 
+            // Zaharuri libere(fara fructe si legume)
+            Double totalFreeSugars = masa.stream().mapToDouble(Masa::getTotalFreeSugars).sum();
+
+            // Calculam procentul din procentul grasimilor totale
+            Double freeSugarsPercentOutOfCarbs = totalFreeSugars / (totalCarbohydrates == 0 ? 1 : totalCarbohydrates);
+
+            // Inmultim cu procentul de grasimi pentru a obtine procentul zaharurilor
+            Double freeSugarsPercent = macroPercents.carbsPercent() * freeSugarsPercentOutOfCarbs;
+
+            // Zaharuri recomandate (5-10% din totalul caloriilor)
+            Double freeSugarsRecommendedGrams = totalEnergyKcal * 0.1 / 4;
+
+            // Grasimi Saturate
+            Double saturatedFatPercentOutOfFat = totalSaturatedFat / (totalFat == 0 ? 1 : totalFat);
+
+            Double saturatedFatPercent = macroPercents.fatPercent() * saturatedFatPercentOutOfFat;
+
+            // Grasimi saturate recomandate (10% din totalul caloriilor)
+            Double saturatedFatRecommendedGrams = totalEnergyKcal * 0.1 / 9;
+
+
+            // Fibre - valoarea recomandata in functie de varsta
+            Double fiberRecommendedGrams = switch(utilizator.getVarsta()) {
+                case 1, 2, 3, 4, 5 -> 15.0;
+                case 6, 7, 8, 9 -> 21.0;
+                default -> 25.0;
+            };
+
+            String fiberMessage;
+
+            if(fiberRecommendedGrams == 15.0) {
+                fiberMessage = "OMS recomandă cel puțin 15 g de fibre pe zi pentru copiii cu vârsta cuprinsă între 2 și 5 ani";
+            } else if(fiberRecommendedGrams == 21.0) {
+                fiberMessage = "OMS recomandă cel puțin 21 g de fibre pe zi pentru copiii cu vârsta cuprinsă între 6 și 9 ani";
+            } else {
+                fiberMessage = "OMS recomandă cel puțin 25 g de fibre pe zi pentru adulți și copii cu vârsta de 10 ani și peste";
+            }
+
+            // Sare
+            Double saltRecommendedGrams = 5.0;
+
+            // Fructe si legume
+            Double totalFruitsGrams = masa.stream().mapToDouble(Masa::getTotalFruitsGrams).sum();
+            Double totalVegetablesGrams = masa.stream().mapToDouble(Masa::getTotalVegetablesGrams).sum();
+
+            Double fruitsAndVegetablesRecommendedGrams = switch(utilizator.getVarsta()) {
+                case 1, 2, 3, 4, 5 -> 250.0;
+                case 6, 7, 8, 9 -> 350.0;
+                default -> 400.0;
+            };
+
+            String fruitsAndVegetablesMessage;
+
+            if(fruitsAndVegetablesRecommendedGrams == 250.0) {
+                fruitsAndVegetablesMessage = "OMS recomandă cel puțin 250 g de fructe și legume pe zi pentru copiii cu vârsta cuprinsă între 2 și 5 ani";
+            } else if(fruitsAndVegetablesRecommendedGrams == 350.0) {
+                fruitsAndVegetablesMessage = "OMS recomandă cel puțin 350 g de fructe și legume pe zi pentru copiii cu vârsta cuprinsă între 6 și 9 ani";
+            } else {
+                fruitsAndVegetablesMessage = "OMS recomandă cel puțin 400 g de fructe și legume pe zi pentru adulți și copii cu vârsta de 10 ani și peste";
+            }
 
             mesePeZiResponse.add(new MesePeZiResponse(
                             date,
@@ -199,20 +264,34 @@ public class MasaService {
                             totalFat,
                             macroPercents.fatPercent(),
                             totalSaturatedFat,
+                            saturatedFatRecommendedGrams,
+                            saturatedFatPercent,
                             totalCarbohydrates,
                             macroPercents.carbsPercent(),
                             totalSugars,
+                            totalFreeSugars,
+                            freeSugarsPercent,
+                            freeSugarsRecommendedGrams,
                             totalFiber,
+                            fiberRecommendedGrams,
+                            fiberMessage,
                             totalProtein,
                             macroPercents.proteinPercent(),
                             totalSalt,
+                            saltRecommendedGrams,
+                            totalVegetablesGrams,
+                            totalFruitsGrams,
+                            fruitsAndVegetablesRecommendedGrams,
+                            fruitsAndVegetablesMessage,
                             caloriiArse,
                             caloriiNete
                     )
             );
         });
 
-        return mesePeZiResponse;
+        return mesePeZiResponse.stream()
+                .sorted(Comparator.comparing(MesePeZiResponse::data))
+                .toList();
     }
 
     public InregistrareAlimentResponse modificaGramajInregistrareAliment(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_flutter/presentation/my_alimente_page.dart';
-import 'package:frontend_flutter/util/date_formater.dart';
+import 'package:frontend_flutter/core/date_formater.dart';
 import '../core/api_client.dart';
 import '../core/token_storage.dart';
 import '../features/auth/data/profile_repository.dart';
@@ -59,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (confirmContext) => AlertDialog(
-        title: const Text('Ștergere aliment'),
+        title: const Text('Confirmare logout'),
         content: Text(
           'Sigur vrei să te deloghezi? Aceasta va șterge toate datele stocate local și va reveni la ecranul de login.',
         ),

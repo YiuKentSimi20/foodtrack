@@ -302,31 +302,41 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                 return null;
               },
             ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              initialValue: _nivel.displayName,
-              decoration: InputDecoration(
-                labelText: 'Nivel activitate fizică',
-                helperText: 'Alege cât de activ ești în mod obișnuit',
-                errorText: _nivelError,
-              ),
-              items: NivelActivitate.values
-                  .map((e) => DropdownMenuItem<String>(
-                value: e.displayName,
-                child: Text(e.description),
-              ))
-                  .toList(),
-              onChanged: (v) {
-                if (v == null) return;
-                setState(() {
-                  _nivel = NivelActivitate.fromCode(v);
-                });
-              },
-              validator: (v) {
-                if (v == null || v.isEmpty) return 'Te rog selectează nivelul de activitate';
-                return null;
-              },
+            const SizedBox(height: 24),
+            const Text(
+              'Nivel activitate fizică',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
             ),
+            const SizedBox(height: 8),
+            Column(
+              children: NivelActivitate.values
+                  .map(
+                    (nivel) => RadioListTile<NivelActivitate>(
+                  value: nivel,
+                  groupValue: _nivel,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _nivel = value);
+                    }
+                  },
+                  title: Text(
+                    nivel.displayName,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text(nivel.description),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              )
+                  .toList(),
+            ),
+            if (_nivelError != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  _nivelError!,
+                  style: TextStyle(color: Colors.red.shade700, fontSize: 12),
+                ),
+              ),
             const SizedBox(height: 16),
             if (_error != null) Text(_error!, style: const TextStyle(color: Colors.red)),
             ElevatedButton(

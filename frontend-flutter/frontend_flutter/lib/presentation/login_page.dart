@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_flutter/main.dart';
 import 'package:frontend_flutter/presentation/register_account_page.dart';
 import 'package:frontend_flutter/presentation/today_jurnal_page.dart';
 import '../core/api_client.dart';
@@ -57,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const TodayJournalPage()),
+        MaterialPageRoute(builder: (_) => const StartupGate()),
       );
     } catch (e) {
       _passwordController.clear();

@@ -113,6 +113,37 @@ public class Masa {
                 .sum();
     }
 
+
+    //Total pentru zaharuri libere(fara fructe si legume)
+
+    public Double getTotalFreeSugars() {
+
+        return inregistrariAlimente.stream()
+                .filter(ia -> ia.getCategorie() == CategorieAliment.FRUCTE || ia.getCategorie() == CategorieAliment.LEGUME)
+                .mapToDouble(InregistrareAliment::getTotalSugars)
+                .sum();
+    }
+
+
+    //Gramaje totale pentru fructe si legume
+
+    public Double getTotalFruitsGrams() {
+
+        return inregistrariAlimente.stream()
+                .filter(ia -> ia.getCategorie() == CategorieAliment.FRUCTE)
+                .mapToDouble(InregistrareAliment::getGrams)
+                .sum();
+    }
+
+    public Double getTotalVegetablesGrams() {
+
+        return inregistrariAlimente.stream()
+                .filter(ia -> ia.getCategorie() == CategorieAliment.LEGUME)
+                .mapToDouble(InregistrareAliment::getGrams)
+                .sum();
+    }
+
+
     public Double getFatCalories() {
         return getTotalFat() * 9;
     }
