@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_flutter/presentation/widgets/macro_ring.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../core/constants/macro_colors.dart';
 import '../features/mese/models/mese_pe_zi_response.dart';
 import '../core/date_helper.dart';
@@ -173,19 +174,13 @@ class NutritionDayDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Parse date
+
     DateTime parsedDate;
     try {
       parsedDate = DateTime.parse(day.data);
     } catch (_) {
       parsedDate = DateTime.now();
     }
-
-    // Extract values với fallback
-    final kcal = day.totalCaloriiZi ?? 0.0;
-    final protein = day.totalProteineZi ?? 0.0;
-    final carbs = day.totalCarbohidratiZi ?? 0.0;
-    final fat = day.totalGrasimiZi ?? 0.0;
 
     final fruits = day.fruitsTotalGrams ?? 0.0;
     final veg = day.vegetablesTotalGrams ?? 0.0;
@@ -246,7 +241,7 @@ class NutritionDayDetailPage extends StatelessWidget {
                     _macroColumn(
                         context: context,
                         color: MacroColors.proteins,
-                        percent: day.obiectivProteineProc ?? 0.0,
+                        percent: day.obiectivProteineProc! * 100,
                         grams: day.obiectivProteineZi,
                         name: 'Prot.'
                     ),
@@ -254,14 +249,14 @@ class NutritionDayDetailPage extends StatelessWidget {
                     _macroColumn(
                         context: context,
                         color: MacroColors.carbs,
-                        percent: day.obiectivCarbohidratiProc ?? 0.0,
+                        percent: day.obiectivCarbohidratiProc! * 100,
                         grams: day.obiectivCarbohidratiZi,
                         name: 'Carb.'
                     ),
                     _macroColumn(
                         context: context,
                         color: MacroColors.fats,
-                        percent: day.obiectivGrasimiProc ?? 0.0,
+                        percent: day.obiectivGrasimiProc! * 100,
                         grams: day.obiectivGrasimiZi,
                         name: 'Grăsimi'
                     ),
@@ -351,6 +346,38 @@ class NutritionDayDetailPage extends StatelessWidget {
               ),
             ),
           ),
+
+          const SizedBox(height: 16),
+          Text(
+            'Surse:',
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.left,
+          ),
+          Center(
+            child: GestureDetector(
+              onTap: () async {
+                final Uri url = Uri.parse(
+                  'https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates',
+                );
+                try {
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                } catch (_) {}
+              },
+              child: Text(
+                'Organizația Mondială a Sănătății - updates guidelines on fats and carbohydrates',
+                style: TextStyle(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
 
         ],
       ),
