@@ -18,7 +18,7 @@ app = FastAPI(title="FoodTrack AI API", description="Microserviciu pentru recuno
 # 2. Încărcăm modelul la pornirea serverului (ca să nu îl încarce la fiecare poză)
 print("Se incarca modelul AI...")
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "food_101_model.pth"
+MODEL_PATH = BASE_DIR / "efficientnet_b2_food101_best_71_20test.pth"
 
 def load_model():
     # Initializam arhitectura EfficientNet-B2
@@ -29,7 +29,6 @@ def load_model():
     model.classifier[1] = nn.Linear(num_features, 101)
     
     # Incarcam modelul antrenat
-    MODEL_PATH = "ml-recognition-model/efficientnet_b2_food101_best_71_20test.pth"
     checkpoint = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
     
     # Access the model state dict from the checkpoint

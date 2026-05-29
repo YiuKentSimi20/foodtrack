@@ -1,18 +1,18 @@
 server:
   address: 0.0.0.0
-  port: 8083
+  port: ${SERVER_PORT:8083}
 
 spring:
   application:
     name: "FoodTrack"
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/foodtrack_db
-    username: admin
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://192.168.1.2:5433/foodtrack_db}
+    username: ${SPRING_DATASOURCE_USERNAME:admin}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: true
     properties:
       hibernate:

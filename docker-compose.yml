@@ -1,3 +1,4 @@
+
 services:
   db:
     image: postgres:15-alpine
@@ -12,5 +13,35 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  backend-spring-boot:
+    build:
+      context: ./backend-spring-boot
+      dockerfile: Dockerfile
+    container_name: foodtrack-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://192.168.1.2:5433/foodtrack_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8083:8083"
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+  ml-rcognition-model:
+    build:
+      context: ./ml-recognition-model
+      dockerfile: Dockerfile
+    container_name: foodtrack-ml
+    ports:
+      - "8085:8085"
+      
+
 volumes:
   postgres_data:
+
+networks:
+  foodtrack-network:
+    driver: bridge

@@ -30,7 +30,7 @@ public class FoodRecognitionService {
             MultipartFile file,
             UUID idUtilizator) throws IOException, HttpClientErrorException, HttpServerErrorException {
 
-        String fastApiUrl = "http://localhost:8085/api/predict";
+        String fastApiUrl = "http://192.168.1.2:8085/api/predict";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
