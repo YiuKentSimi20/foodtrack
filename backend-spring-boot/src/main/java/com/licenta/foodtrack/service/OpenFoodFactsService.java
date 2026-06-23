@@ -53,10 +53,9 @@ public class OpenFoodFactsService {
         return Collections.emptyList();
     }
 
-
     private HttpEntity<String> createRequestEntity() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", "FoodTrackApp - Android/Java - Versiunea 1.0 - alexandru@email.com");
+        headers.set("User-Agent", "FoodTrackApp - Android/Java - Versiunea 1.0 - alexandru.ilia@student.upt.ro");
 
         return new HttpEntity<>(headers);
     }

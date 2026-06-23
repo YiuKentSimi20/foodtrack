@@ -126,7 +126,6 @@ public class AlimentService {
 
         // La update, alimentul trebuie revalidat
         aliment.setIsValidated(false);
-        aliment.setNutritionScore(NutritionScore.UNKNOWN);
 
         return alimentMapper.toDto(alimentRepository.save(aliment));
     }

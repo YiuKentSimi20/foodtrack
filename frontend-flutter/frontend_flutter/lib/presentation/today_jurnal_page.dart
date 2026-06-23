@@ -882,19 +882,18 @@ class _TodayJournalPageState extends State<TodayJournalPage> {
                                     icon: const Icon(Icons.add_circle_outline),
                                     tooltip: 'Adaugă alimente',
                                     onPressed: () async {
-                                      // navigăm la pagina de search; după return true facem refresh
+
                                       final added = await Navigator.of(context)
                                           .push<bool>(
                                             MaterialPageRoute(
                                               builder: (_) => SearchFoodPage(
                                                 categorieMasaId: categorie.id,
                                                 selectedDate:
-                                                    day, // transmite ziua curentă (din _buildDayContent)
+                                                    day,
                                               ),
                                             ),
                                           );
                                       if (added == true) {
-                                        // reîncarcă raportul (sau poți re-apela doar _loadRaport)
                                         _loadRaport();
                                       }
                                     },

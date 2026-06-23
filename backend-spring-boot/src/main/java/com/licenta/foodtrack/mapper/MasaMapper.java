@@ -25,8 +25,6 @@ public class MasaMapper {
                 masa.getId(),
                 masa.getCategorieMasa().getId(),
                 masa.getDataMesei(),
-                masa.getOraMesei(),
-                masa.getNotiteMasa(),
                 masa.calculateTotalGrams(),
                 masa.getTotalEnergyKcal(),
                 masa.getTotalEnergyKj(),

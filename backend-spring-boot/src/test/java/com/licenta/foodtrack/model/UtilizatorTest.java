@@ -51,13 +51,13 @@ class UtilizatorTest {
         }
 
         @Test
-        @DisplayName("calculateBmrHarrisBenedict for male should be correct")
-        void calculateBmrHarrisBenedict_forMale_shouldBeCorrect() {
+        @DisplayName("calculateMiffinStJeor for male should be correct")
+        void calculateMiffinStJeor_forMale_shouldBeCorrect() {
             utilizator.setGen(GenUtilizator.M);
             utilizator.addMasuratoareGreutate(new MasuratoareGreutate(1L, 75.0, LocalDate.of(2026, 5, 1), utilizator));
             utilizator.addMasuratoareInaltime(new MasuratoareInaltime(1L, 180.0, LocalDate.of(2026, 5, 1), utilizator));
 
-            Double result = utilizator.calculateBmrHarrisBenedict(LocalDate.of(2026, 5, 1));
+            Double result = utilizator.calculateMiffinStJeor(LocalDate.of(2026, 5, 1));
 
             // 10 * 75 + 6.25 * 180 - 5 * 36 + 5 = 750 + 1125 - 180 + 5 = 1700
             assertEquals(1700.0, result, 1.0);

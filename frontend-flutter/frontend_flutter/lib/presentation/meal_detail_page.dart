@@ -42,9 +42,6 @@ class _MealDetailPageState extends State<MealDetailPage> {
     final tokenStorage = TokenStorage();
     _repo = MasaRepository(apiClient: ApiClient(tokenStorage));
 
-
-    // Încarcă datele inițial (opțional, dacă vrei să forțezi refresh de la server)
-    //_loadMealDetails();
   }
 
   Future<void> _loadMealDetails() async {
@@ -90,14 +87,13 @@ class _MealDetailPageState extends State<MealDetailPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.secondary,
         onPressed: () async {
-          // folosește categorieMasaId din masa; dacă lipsește, poți trimite id-ul categoriei curente
           final int? categorieId = _masa.categorieMasaId;
           final DateTime selectedDate = DateTime.tryParse(_masa.data) ?? DateTime.now();
 
           await Navigator.of(context).push<bool>(
             MaterialPageRoute(
               builder: (_) => SearchFoodPage(
-                categorieMasaId: categorieId ?? 0, // asigură-te că nu e 0 dacă endpoint-ul cere id valid
+                categorieMasaId: categorieId ?? 0,
                 selectedDate: selectedDate,
               ),
             ),

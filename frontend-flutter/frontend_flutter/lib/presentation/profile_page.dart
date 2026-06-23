@@ -5,7 +5,7 @@ import '../core/api_client.dart';
 import '../core/token_storage.dart';
 import '../features/auth/data/profile_repository.dart';
 import '../features/auth/models/date_personale_response.dart';
-import 'admin/admin_validate_aliments_page.dart';
+import 'admin/admin_validate_alimente_page.dart';
 import 'edit_personal_data_page.dart';
 import 'health_connect_settings_page.dart';
 import 'login_page.dart';
@@ -255,7 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const AdminValidateAlimentsPage(),
+                          builder: (_) => const AdminValidateAlimentePage(),
                         ),
                       );
                     },

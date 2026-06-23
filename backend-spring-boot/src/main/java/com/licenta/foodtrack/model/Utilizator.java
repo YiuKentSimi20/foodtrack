@@ -247,11 +247,11 @@ public class Utilizator implements UserDetails {
 
     public Double calculateBmr(LocalDate date) {
 
-        return this.masuratoriGrasimeCorporala.isEmpty() ? calculateBmrHarrisBenedict(date) : calculateBmrKatchMcArdle(date);
+        return this.masuratoriGrasimeCorporala.isEmpty() ? calculateMiffinStJeor(date) : calculateBmrKatchMcArdle(date);
 
     }
 
-    public Double calculateBmrHarrisBenedict(LocalDate date) {
+    public Double calculateMiffinStJeor(LocalDate date) {
 
         return 10 * getMasuratoareGreutateFor(date).orElse(0.0)
                 + 6.25 * getMasuratoareInaltimeFor(date).orElse(0.0)

@@ -5,7 +5,7 @@ import com.licenta.foodtrack.dto.AlimentDto;
 import com.licenta.foodtrack.dto.ApiResponse;
 import com.licenta.foodtrack.dto.CreateAlimentRequest;
 import com.licenta.foodtrack.dto.DetaliiAlimentResponse;
-import com.licenta.foodtrack.exception.ValidationExceptionHandler;
+import com.licenta.foodtrack.exception.CustomExceptionHandler;
 import com.licenta.foodtrack.model.Aliment;
 import com.licenta.foodtrack.model.NutritionScore;
 import com.licenta.foodtrack.model.Utilizator;
@@ -17,7 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/foodtrack/aliment")
@@ -25,7 +24,7 @@ import java.util.UUID;
 public class AlimentController
 {
     private final AlimentService alimentService;
-    private final ValidationExceptionHandler validationExceptionHandler;
+    private final CustomExceptionHandler customExceptionHandler;
 
     @GetMapping("/search-by-name-mock")
     public ResponseEntity<List<Aliment>> searchByNameMock(

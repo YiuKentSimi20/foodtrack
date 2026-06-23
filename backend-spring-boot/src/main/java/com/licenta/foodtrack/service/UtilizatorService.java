@@ -41,9 +41,6 @@ public class UtilizatorService {
         Utilizator utilizator = utilizatorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost găsit"));;
 
-        if(request.username()!=null)  {
-            utilizator.setUsername(request.username());
-        }
         if(request.gen()!=null)  {
             utilizator.setGen(request.gen());
         }
@@ -52,9 +49,6 @@ public class UtilizatorService {
         }
         if(request.nivelActivitate()!=null) {
             utilizator.setNivelActivitate(request.nivelActivitate());
-        }
-        if(request.dataNasterii()!=null || request.nivelActivitate()!=null) {
-            utilizator.setNecesarCaloricMentinere(utilizator.calculateTdee(LocalDate.now()));
         }
 
         utilizatorRepository.save(utilizator);

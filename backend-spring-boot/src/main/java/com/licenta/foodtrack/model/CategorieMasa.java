@@ -38,9 +38,4 @@ public class CategorieMasa {
         this.numarOrdine = numarOrdine;
         this.isActive = isActive;
     }
-
-    //TODO: De modificat categorie masa astfel incat sa permita modificarea formatului mesei
-    // formatul trebuie sa aiba un nr de mese maxim fix, cele principale sa fie vizibile by default
-    // si celelalte sa aiba un nume generic(ex masa 1, 2, 3) si sa fie vizibile doar daca utilizatorul le adauga
-
 }

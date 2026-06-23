@@ -6,34 +6,38 @@ import com.licenta.foodtrack.model.NutritionScore;
 import com.licenta.foodtrack.validation.annotations.EnumNamePattern;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record CreateAlimentRequest(
         @JsonProperty("product_name")
         String productName,
         String brands,
         String code,
-        @Positive
+        @PositiveOrZero
         @NotNull
         @JsonProperty("energy_kcal_100g")
         Double energyKcal100g,
-        @Positive
+        @PositiveOrZero
         @NotNull
         @JsonProperty("fat_100g")
         Double fat100g,
         @JsonProperty("saturated_fat_100g")
         Double saturatedFat100g,
-        @Positive
+        @PositiveOrZero
         @NotNull
         @JsonProperty("carbohydrates_100g")
         Double carbohydrates100g,
         @JsonProperty("sugars_100g")
+        @PositiveOrZero
         Double sugars100g,
+        @PositiveOrZero
         @JsonProperty("fiber_100g")
         Double fiber100g,
-        @Positive
+        @PositiveOrZero
         @NotNull
         @JsonProperty("protein_100g")
         Double protein100g,
+        @PositiveOrZero
         @JsonProperty("salt_100g")
         Double salt100g,
 

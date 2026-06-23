@@ -26,9 +26,6 @@ public class Masa {
     private CategorieMasa categorieMasa;
 
     private LocalDate dataMesei;
-    private String oraMesei;
-    private String notiteMasa;
-    //TODO: Adaugat request pentru a adauga detaliile mesei
 
     @OneToMany(mappedBy = "masa", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InregistrareAliment> inregistrariAlimente;

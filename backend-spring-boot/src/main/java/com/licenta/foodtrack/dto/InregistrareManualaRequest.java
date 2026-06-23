@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.time.LocalDate;
 
@@ -17,21 +18,22 @@ public record InregistrareManualaRequest(
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate data,
 
-        @Positive
+        @PositiveOrZero
         Double grams,
 
-        @Positive(message = "energy_kcal must be a positive number")
+        @PositiveOrZero(message = "energy_kcal must be a positive number")
         @JsonProperty("energy_kcal")
         Double energyKcal,
         @NotNull(message = "fat is required")
-        @Positive(message = "fat must be a positive number")
+        @PositiveOrZero(message = "fat must be a positive number")
         Double fat,
         @NotNull(message = "carbohydrates is required")
-        @Positive(message = "carbohydrates must be a positive number")
+        @PositiveOrZero(message = "carbohydrates must be a positive number")
         Double carbohydrates,
-        @Positive(message = "fiber must be a positive number")
+        @PositiveOrZero(message = "fiber must be a positive number")
         Double fiber,
         @NotNull(message = "protein is required")
+        @PositiveOrZero
         Double protein
 ) {
 }

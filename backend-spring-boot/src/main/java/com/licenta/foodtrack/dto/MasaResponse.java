@@ -10,8 +10,6 @@ public record MasaResponse(
         @JsonProperty("categorie_masa_id")
         Long categorieMasaId,
         LocalDate data,
-        String ora,
-        String notite,
 
         @JsonProperty("grams_total")
         Double gramsTotal,

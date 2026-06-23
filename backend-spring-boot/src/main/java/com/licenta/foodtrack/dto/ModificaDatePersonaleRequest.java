@@ -10,9 +10,6 @@ import java.time.LocalDate;
 
 public record ModificaDatePersonaleRequest(
 
-        @JsonProperty("username")
-        String username,
-
         @JsonProperty("data_nasterii")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate dataNasterii,

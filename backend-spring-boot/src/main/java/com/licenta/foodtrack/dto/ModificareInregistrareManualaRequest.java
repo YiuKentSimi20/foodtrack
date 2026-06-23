@@ -2,6 +2,7 @@ package com.licenta.foodtrack.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record ModificareInregistrareManualaRequest(
         @NotNull(message = "id is required")
@@ -9,15 +10,15 @@ public record ModificareInregistrareManualaRequest(
         @Positive
         Double grams,
 
-        @Positive(message = "calories must be a positive number")
+        @PositiveOrZero(message = "calories must be a positive number")
         Double calories,
-        @Positive(message = "fat must be a positive number")
+        @PositiveOrZero(message = "fat must be a positive number")
         Double fat,
-        @Positive(message = "carbohydrates must be a positive number")
+        @PositiveOrZero(message = "carbohydrates must be a positive number")
         Double carbohydrates,
-        @Positive(message = "fiber must be a positive number")
+        @PositiveOrZero(message = "fiber must be a positive number")
         Double fiber,
-        @Positive(message = "protein must be a positive number")
+        @PositiveOrZero(message = "protein must be a positive number")
         Double protein
 ) {
 }

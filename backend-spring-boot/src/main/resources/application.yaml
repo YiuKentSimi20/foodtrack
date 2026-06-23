@@ -7,7 +7,7 @@ spring:
     name: "FoodTrack"
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://192.168.1.2:5433/foodtrack_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/foodtrack_db}
     username: ${SPRING_DATASOURCE_USERNAME:admin}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
   jpa:
@@ -19,5 +19,6 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-    secret: "123b11faa2a3fab9daa664fe05d8e5872dce72c0e259a84e566d06b06f894a98"
+    secret: ${JWT_SECRET_KEY:123b11faa2a3fab9daa664fe05d8e5872dce72c0e259a84e566d06b06f894a98}
     access-token-expiration-ms: 36000000
+

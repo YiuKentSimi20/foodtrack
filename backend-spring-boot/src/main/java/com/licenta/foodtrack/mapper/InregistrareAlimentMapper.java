@@ -3,9 +3,7 @@ package com.licenta.foodtrack.mapper;
 import com.licenta.foodtrack.dto.InregistrareAlimentRequest;
 import com.licenta.foodtrack.dto.InregistrareAlimentResponse;
 import com.licenta.foodtrack.dto.InregistrareManualaRequest;
-import com.licenta.foodtrack.model.Aliment;
-import com.licenta.foodtrack.model.InregistrareAliment;
-import com.licenta.foodtrack.model.TipInregistrare;
+import com.licenta.foodtrack.model.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,7 +32,7 @@ public class InregistrareAlimentMapper {
     public InregistrareAliment toInregistrareAliment(InregistrareManualaRequest request) {
 
         InregistrareAliment inregistrareAliment = new InregistrareAliment();
-        inregistrareAliment.setProductName("Intrare manuala");
+        inregistrareAliment.setProductName("Intrare manuală");
         if(request.grams() != null) {
             inregistrareAliment.setGrams(request.grams());
         } else {
@@ -47,7 +45,10 @@ public class InregistrareAlimentMapper {
         if(request.fiber() != null) {
             inregistrareAliment.setFiber100g(request.fiber());
         }
+        inregistrareAliment.setCategorie(CategorieAliment.ALTELE);
+        inregistrareAliment.setNutritionScore(NutritionScore.UNKNOWN);
         inregistrareAliment.setTipInregistrare(TipInregistrare.MANUAL);
+
 
         return  inregistrareAliment;
     }
