@@ -30,8 +30,9 @@ class LineChartCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final allY = <double>[
       ...spots.map((e) => e.y),
-      ...?targetSpots?.map((e) => e.y),
+      if (targetSpots != null) ...targetSpots!.map((e) => e.y),
     ];
+
     final double minValue = spots.isEmpty
         ? 0.0
         : spots.map((s) => s.y).reduce((a, b) => a < b ? a : b);
@@ -43,11 +44,31 @@ class LineChartCard extends StatelessWidget {
         : spots.map((s) => s.y).reduce((a, b) => a + b) / spots.length;
 
     final maxY = allY.isEmpty
-        ? 10.0
-        : (allY.reduce((a, b) => a > b ? a : b));
+        ? 0
+        : allY.reduce((a, b) => a > b ? a : b);
 
-    final minY = minIsZero ? 0 : (allY.isEmpty ? 0 : allY.reduce((a, b) => a < b ? a : b));
+    debugPrint(maxY.toString());
 
+    // final minY = minIsZero ? 0 : (allY.isEmpty ? 0 : allY.reduce((a, b) => a < b ? a : b));
+    final minY = allY.isEmpty
+        ? 0
+        : allY.reduce((a, b) => a < b ? a : b);
+
+    double safeMinY = minY.toDouble();
+    double safeMaxY = maxY.toDouble();
+
+    if (safeMinY == safeMaxY) {
+      safeMinY -= 1.0;
+      safeMaxY += 1.0;
+    }
+
+
+    double yRange = safeMaxY - safeMinY;
+    double yInterval = yRange / 4;
+
+    if (yInterval <= 0) {
+      yInterval = 1.0;
+    }
 
     return Card(
       child: Padding(
@@ -66,8 +87,8 @@ class LineChartCard extends StatelessWidget {
                 LineChartData(
                   minX: 0,
                   maxX: spots.isNotEmpty ? (spots.length - 1).toDouble() : 1,
-                  minY: minY.toDouble(),
-                  maxY: maxY.toDouble(),
+                  minY: safeMinY,
+                  maxY: safeMaxY,
                   gridData: FlGridData(show: true, drawVerticalLine: false),
                   titlesData: FlTitlesData(
                     show: true,
@@ -85,7 +106,7 @@ class LineChartCard extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 64,
-                        interval: maxY / 4,
+                        interval: yInterval,
                       ),
                     ),
                   ),

@@ -208,7 +208,7 @@ class _NewObiectivPageState extends State<NewObiectivPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Setează obiectiv manual')),
+      appBar: AppBar(title: const Text('Setează un obiectiv')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

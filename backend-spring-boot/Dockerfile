@@ -3,10 +3,10 @@ FROM eclipse-temurin:25-jdk-alpine AS builder
 
 WORKDIR /build
 
-# Instalam Maven (imaginea de baza contine doar Java)
+# Instalam Maven
 RUN apk add --no-cache maven
 
-# Copiem pom.xml și descarcam dependentele (Cache layer)
+# Copiem pom.xml și descarcam dependentele
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
@@ -18,16 +18,15 @@ RUN mvn clean package -DskipTests
 
 
 # --- STAGE 2: Runtime ---
-# FOLOSIM JAVA 25 si JRE (pentru ca aplicatia e deja compilata)
+# FOLOSIM JAVA 25
 FROM eclipse-temurin:25-jre-alpine
 
 WORKDIR /app
 
 # Copiem JAR-ul generat din stadiul 'builder'
-# (Folosim wildcard *.jar in caz ca versiunea din pom.xml se schimba)
 COPY --from=builder /build/target/*.jar app.jar
 
-# Expunem portul (asa cum l-ai setat tu)
+# Expunem portul
 EXPOSE 8083
 
 # Health check

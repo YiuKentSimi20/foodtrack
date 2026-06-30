@@ -3,11 +3,10 @@ package com.licenta.foodtrack.service;
 import com.licenta.foodtrack.dto.AlimentDto;
 import com.licenta.foodtrack.dto.PredictFoodResponse;
 import com.licenta.foodtrack.exception.PredictionNotSureException;
-import com.licenta.foodtrack.model.Utilizator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,11 +25,14 @@ public class FoodRecognitionService {
     private final RestTemplate restTemplate;
     private final AlimentService alimentService;
 
+    @Value("${my.ai_service.url}")
+    String fastApiUrl;
+
     public AlimentDto predictFoodFromImage(
             MultipartFile file,
             UUID idUtilizator) throws IOException, HttpClientErrorException, HttpServerErrorException {
 
-        String fastApiUrl = "http://localhost:8085/api/predict";
+        String predictUrl = fastApiUrl + "/api/predict";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -48,7 +50,7 @@ public class FoodRecognitionService {
         body.add("file", fileAsResource);
 
         ResponseEntity<PredictFoodResponse> response = restTemplate.exchange(
-                    fastApiUrl,
+                    predictUrl,
                     HttpMethod.POST,
                     requestEntity,
                     PredictFoodResponse.class

@@ -86,8 +86,8 @@ public class Utilizator implements UserDetails {
         }
 
         addCategoriiMasa(new CategorieMasa("Mic Dejun", 1, true));
-        addCategoriiMasa(new CategorieMasa("Pranz", 2, true));
-        addCategoriiMasa(new CategorieMasa("Cina", 3, true));
+        addCategoriiMasa(new CategorieMasa("Prânz", 2, true));
+        addCategoriiMasa(new CategorieMasa("Cină", 3, true));
         addCategoriiMasa(new CategorieMasa("Gustare", 4, true));
         addCategoriiMasa(new CategorieMasa("Masa 1", 5, false));
         addCategoriiMasa(new CategorieMasa("Masa 2", 6, false));

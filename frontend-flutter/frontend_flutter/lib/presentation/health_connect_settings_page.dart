@@ -207,7 +207,8 @@ class _HealthConnectSettingsPageState extends State<HealthConnectSettingsPage> {
                 SizedBox(height: 8),
                 Text(
                   'Activând sincronizarea, datele despre pași și calorii arse din Health Connect vor fi importate în aplicația FoodTrack. '
-                  'Butonul "Sincronizează acum" vă permite să importați manual datele din ziua curentă.',
+                  'Butonul "Sincronizează acum" vă permite să importați manual datele din ultimele 30 de zile.'
+                      ' De asemenea, sincronizarea se poate face și din pagina jurnalului odată ce este activată conexiunea.',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],

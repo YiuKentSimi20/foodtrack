@@ -10,7 +10,6 @@ class NutritionDayDetailPage extends StatelessWidget {
 
   const NutritionDayDetailPage({required this.day, super.key});
 
-  // Simple card that shows consumed value + recommendation message
   Widget _simpleRecommendationCard({
     required String title,
     required double value,
@@ -21,6 +20,9 @@ class NutritionDayDetailPage extends StatelessWidget {
     String? extraNote,
   }) {
     final isOver = recommended > 0 ? value > recommended : false;
+    if (unit == 'mg') {
+      value *= 1000;
+    }
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
@@ -48,7 +50,7 @@ class NutritionDayDetailPage extends StatelessWidget {
                 ],
               ),
             ),
-            if (isOver && title != 'Fibre' || (title == 'Fibre' && value < recommended))
+            if (isOver && title != 'Fibre' || (title == 'Fibre' && !isOver))
               Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: Icon(Icons.warning_amber_rounded, color: Colors.orange),
@@ -196,7 +198,7 @@ class NutritionDayDetailPage extends StatelessWidget {
     final saltRecommended = day.saltRecommendedGrams ?? 5.0;
 
     final satFat = day.saturatedFatTotal ?? 0.0;
-    final satFatRecommended = day.saturatedFatRecommendedGrams ?? 22.0;
+    final satFatRecommended = day.saturatedFatRecommendedGrams ?? 0.0;
 
     final burnedCalories = day.caloriiArse ?? 0.0;
     final totalSteps = day.activitatiFizice.fold<int>(
@@ -302,13 +304,13 @@ class NutritionDayDetailPage extends StatelessWidget {
             value: satFat,
             recommended: satFatRecommended,
             unit: 'g',
-            recommendedLabel: 'Recomandare: ${satFatRecommended.toStringAsFixed(0)} g',
+            recommendedLabel: 'OMS recomandă ca maxim 10% din calorii să provnă din grăsimi saturate, tu ai consumat un procent de ${(day.saturatedFatPercent!*100).toStringAsFixed(2)}% din caloriile totale',
             color: Colors.purple,
           ),
 
           _simpleRecommendationCard(
             title: 'Sare',
-            value: salt*1000,
+            value: salt,
             recommended: saltRecommended,
             unit: 'mg',
             recommendedLabel: 'OMS recomandă maxim 5000 mg de sare pe zi, ',

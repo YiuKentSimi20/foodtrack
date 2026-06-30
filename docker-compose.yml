@@ -19,15 +19,16 @@ services:
       dockerfile: Dockerfile
     container_name: foodtrack-app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://192.168.1.2:5433/foodtrack_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/foodtrack_db
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      MY_AI_SERVICE_URL: http://ml-rcognition-model:8085
     ports:
       - "8083:8083"
-    depends_on:
-      db:
-        condition: service_healthy
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
 
 
   ml-rcognition-model:

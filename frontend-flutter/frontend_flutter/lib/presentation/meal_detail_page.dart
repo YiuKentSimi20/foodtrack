@@ -173,7 +173,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
                       category: a.categorie,
                       nutritionScore: a.nutritionScore,
                       onTap: () async {
-                        final isManualEntry = (a.productName ?? '') == 'Intrare manuala';
+                        final isManualEntry = (a.tipInregistrare ?? '') == 'MANUAL';
 
                         if (isManualEntry) {
                           final edited = await Navigator.of(context).push<bool>(

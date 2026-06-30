@@ -22,3 +22,7 @@ jwt:
     secret: ${JWT_SECRET_KEY:123b11faa2a3fab9daa664fe05d8e5872dce72c0e259a84e566d06b06f894a98}
     access-token-expiration-ms: 36000000
 
+my:
+  ai_service:
+    url: ${MY_AI_SERVICE_URL:http://localhost:8085}
+
