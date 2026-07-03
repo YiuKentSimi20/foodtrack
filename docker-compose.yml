@@ -2,7 +2,7 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: baza_de_date_foodtrack
+    container_name: foodtrack-database
     restart: always
     environment:
       POSTGRES_USER: admin
@@ -17,21 +17,21 @@ services:
     build:
       context: ./backend-spring-boot
       dockerfile: Dockerfile
-    container_name: foodtrack-app
+    container_name: foodtrack-backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/foodtrack_db
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      MY_AI_SERVICE_URL: http://ml-rcognition-model:8085
+      MY_AI_SERVICE_URL: http://ai_microservice:8085
     ports:
       - "8083:8083"
 
-  ml-rcognition-model:
+  ai_microservice:
     build:
       context: ./ml-recognition-model
       dockerfile: Dockerfile
-    container_name: foodtrack-ml
+    container_name: foodtrack-ai-microservice
     ports:
       - "8085:8085"
       
