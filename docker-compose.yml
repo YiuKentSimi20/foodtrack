@@ -26,10 +26,6 @@ services:
       MY_AI_SERVICE_URL: http://ml-rcognition-model:8085
     ports:
       - "8083:8083"
-    # depends_on:
-    #   db:
-    #     condition: service_healthy
-
 
   ml-rcognition-model:
     build:
